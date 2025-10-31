@@ -923,7 +923,7 @@ class _SetChip extends StatelessWidget {
       icon = Icons.warning_rounded;
     } else if (isActive) {
       backgroundColor = theme.colorScheme.primaryContainer;
-      textColor = theme.colorScheme.primary;
+      textColor = theme.colorScheme.onPrimaryContainer;
       borderColor = theme.colorScheme.primary.withOpacity(0.5);
       icon = Icons.play_arrow;
     } else {
@@ -971,7 +971,7 @@ class _SetChip extends StatelessWidget {
             Text(
               label,
               style: theme.textTheme.labelMedium?.copyWith(
-                color: textColor.withOpacity(0.8),
+                color: textColor,
                 fontWeight: FontWeight.w600,
               ),
             ),

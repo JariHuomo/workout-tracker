@@ -179,6 +179,17 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
               style: FilledButton.styleFrom(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                backgroundColor: AppColors.successGreen,
+                foregroundColor: Colors.white,
+                disabledBackgroundColor:
+                    theme.colorScheme.surfaceContainerHighest,
+                disabledForegroundColor:
+                    theme.colorScheme.onSurface.withOpacity(0.38),
+                textStyle: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
           ),
@@ -400,42 +411,35 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildNumberField(
-                          label: 'Increment by',
-                          controller: _stepController,
-                          min: 1,
-                          max: 999,
-                          setter: (value) => _step = value,
-                          enabled: true,
-                          icon: Icons.stairs,
-                        ),
+                  _buildNumberField(
+                    label: 'Increment by',
+                    controller: _stepController,
+                    min: 1,
+                    max: 999,
+                    setter: (value) => _step = value,
+                    enabled: true,
+                    icon: Icons.stairs,
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<ManualGenerationMode>(
+                    value: _mode,
+                    decoration: const InputDecoration(
+                      labelText: 'Progression Mode',
+                      prefixIcon: Icon(Icons.tune),
+                      helperText: 'How reps increase across levels',
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: ManualGenerationMode.uniform,
+                        child: Text('Uniform - Same reps each set'),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: DropdownButtonFormField<ManualGenerationMode>(
-                          value: _mode,
-                          decoration: const InputDecoration(
-                            labelText: 'Mode',
-                            prefixIcon: Icon(Icons.tune),
-                          ),
-                          items: const [
-                            DropdownMenuItem(
-                              value: ManualGenerationMode.uniform,
-                              child: Text('Uniform'),
-                            ),
-                            DropdownMenuItem(
-                              value: ManualGenerationMode.ladder,
-                              child: Text('Incremental'),
-                            ),
-                          ],
-                          onChanged: (mode) => setState(
-                              () => _mode = mode ?? ManualGenerationMode.uniform),
-                        ),
+                      DropdownMenuItem(
+                        value: ManualGenerationMode.ladder,
+                        child: Text('Incremental - Ladder pattern'),
                       ),
                     ],
+                    onChanged: (mode) => setState(
+                        () => _mode = mode ?? ManualGenerationMode.uniform),
                   ),
                   if (_endReps > 15) ...[
                     const SizedBox(height: 12),
@@ -575,10 +579,19 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                           _step <= 0
                       ? null
                       : _generate,
-                  icon: const Icon(Icons.auto_awesome),
+                  icon: const Icon(Icons.auto_awesome, size: 20),
                   label: const Text('Generate Levels'),
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 18),
+                    backgroundColor: AppColors.deepElectricBlue,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    disabledForegroundColor: theme.colorScheme.onSurface.withOpacity(0.38),
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
               ),
@@ -589,10 +602,15 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                     _levels = const [];
                     _selectedTemplate = null;
                   }),
-                  icon: const Icon(Icons.clear),
+                  icon: const Icon(Icons.clear, size: 20),
                   label: const Text('Clear'),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 18),
+                    foregroundColor: theme.colorScheme.error,
+                    side: BorderSide(
+                      color: theme.colorScheme.error.withOpacity(0.5),
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
