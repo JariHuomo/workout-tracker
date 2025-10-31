@@ -2,12 +2,19 @@
 ## GymnasticBodies-Inspired Progressive Calisthenics App
 
 **Research Date**: October 31, 2025
-**Status**: Planning & Research Phase
+**Status**: Active Development (MVP ~55% complete)
 **Created For**: Jari's Workout Tracker Project
 
 ---
 
 ## 📁 Documentation Files
+
+For implementation-focused documentation (how to run, architecture, sprint log), see:
+- `docs/DEV_README.md`
+- `docs/ARCHITECTURE.md`
+- `docs/SETUP.md`
+- `docs/SPRINT_LOG.md`
+- `docs/ROADMAP.md`
 
 ### 1. [GYMNASTICBODIES_RESEARCH.md](./GYMNASTICBODIES_RESEARCH.md)
 **Complete research findings about GymnasticBodies training methodology**
