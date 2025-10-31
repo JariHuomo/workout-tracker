@@ -17,6 +17,7 @@ class MyApp extends ConsumerWidget {
     final theme = ref.watch(appThemeProvider);
     return MaterialApp.router(
       title: 'Workout Tracker',
+      debugShowCheckedModeBanner: false,
       theme: theme.light,
       darkTheme: theme.dark,
       themeMode: theme.mode,

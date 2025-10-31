@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/template.dart';
+import 'package:workouttracker/src/theme/app_theme.dart';
+import 'package:workouttracker/src/theme/custom_widgets.dart';
 
 class ExerciseFormScreen extends ConsumerStatefulWidget {
   const ExerciseFormScreen({super.key});
@@ -138,71 +140,156 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
   @override
   Widget build(BuildContext context) {
     final templatesAsync = ref.watch(templatesProvider);
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('New Exercise'),
         actions: [
-          TextButton(
-            onPressed: _levels.isNotEmpty && _name.text.trim().isNotEmpty
-                ? _save
-                : null,
-            child: const Text('Save'),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: FilledButton.icon(
+              onPressed: _levels.isNotEmpty && _name.text.trim().isNotEmpty
+                  ? _save
+                  : null,
+              icon: const Icon(Icons.check, size: 20),
+              label: const Text('Save'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+            ),
           ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         children: [
+          // Exercise Name Section
+          const SectionHeader(
+            title: 'Exercise Details',
+            subtitle: 'Name your exercise and configure the progression',
+            padding: EdgeInsets.only(left: 0, right: 0, top: 8, bottom: 16),
+          ),
           TextField(
             controller: _name,
-            decoration: const InputDecoration(labelText: 'Name'),
+            decoration: const InputDecoration(
+              labelText: 'Exercise Name',
+              hintText: 'e.g., Pull-ups, Handstand Push-ups',
+              prefixIcon: Icon(Icons.fitness_center),
+            ),
+            style: theme.textTheme.bodyLarge,
             onChanged: (_) => setState(() {}),
           ),
-          const SizedBox(height: 12),
-          templatesAsync.when(
-            data: (templates) => DropdownButtonFormField<String?>(
-              value: _selectedTemplate?.id,
-              decoration: const InputDecoration(labelText: 'Template'),
-              items: [
-                const DropdownMenuItem<String?>(
-                  value: null,
-                  child: Text('No template'),
+          const SizedBox(height: 24),
+          // Template Selection Card
+          ElevatedInfoCard(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const IconBadge(
+                      icon: Icons.view_list_outlined,
+                      size: 40,
+                      iconSize: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Progression Template',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          Text(
+                            'Use a pre-built progression plan',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                ...templates.map(
-                  (template) => DropdownMenuItem<String?>(
-                    value: template.id,
-                    child: Text(template.name),
+                const SizedBox(height: 16),
+                templatesAsync.when(
+                  data: (templates) => DropdownButtonFormField<String?>(
+                    value: _selectedTemplate?.id,
+                    decoration: const InputDecoration(
+                      labelText: 'Select Template',
+                      prefixIcon: Icon(Icons.architecture),
+                    ),
+                    items: [
+                      const DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text('No template (manual)'),
+                      ),
+                      ...templates.map(
+                        (template) => DropdownMenuItem<String?>(
+                          value: template.id,
+                          child: Text(template.name),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value == null) {
+                        setState(() {
+                          _selectedTemplate = null;
+                          _levels = const [];
+                        });
+                        return;
+                      }
+                      final template = templates.firstWhere(
+                        (element) => element.id == value,
+                      );
+                      _applyTemplate(template);
+                    },
+                  ),
+                  loading: () => const LinearProgressIndicator(),
+                  error: (error, _) => Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.error.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: theme.colorScheme.error,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Templates unavailable',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
-              onChanged: (value) {
-                if (value == null) {
-                  setState(() {
-                    _selectedTemplate = null;
-                    _levels = const [];
-                  });
-                  return;
-                }
-                final template = templates.firstWhere(
-                  (element) => element.id == value,
-                );
-                _applyTemplate(template);
-              },
-            ),
-            loading: () => const LinearProgressIndicator(),
-            error: (error, _) => Text(
-              'Templates unavailable: $error',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: Theme.of(context).colorScheme.error),
             ),
           ),
           if (_selectedTemplate != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             _TemplateSummary(template: _selectedTemplate!),
           ],
-          const SizedBox(height: 12),
+          const SizedBox(height: 24),
+
+          // Manual Configuration Section
+          const SectionHeader(
+            title: 'Level Configuration',
+            subtitle: 'Define sets, reps, and rest periods',
+            padding: EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 16),
+          ),
           Row(
             children: [
               Expanded(
@@ -270,58 +357,65 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 20),
           Row(
             children: [
-              FilledButton(
-                onPressed: _selectedTemplate != null ||
-                        _startReps > _endReps ||
-                        _step <= 0
-                    ? null
-                    : _generate,
-                child: const Text('Generate Levels'),
+              Expanded(
+                flex: 2,
+                child: FilledButton.icon(
+                  onPressed: _selectedTemplate != null ||
+                          _startReps > _endReps ||
+                          _step <= 0
+                      ? null
+                      : _generate,
+                  icon: const Icon(Icons.auto_awesome),
+                  label: const Text('Generate Levels'),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                  ),
+                ),
               ),
-              const SizedBox(width: 8),
-              OutlinedButton(
-                onPressed: () => setState(() {
-                  _levels = const [];
-                  _selectedTemplate = null;
-                }),
-                child: const Text('Clear'),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => setState(() {
+                    _levels = const [];
+                    _selectedTemplate = null;
+                  }),
+                  icon: const Icon(Icons.clear),
+                  label: const Text('Clear'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                  ),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          if (_levels.isNotEmpty)
-            Text(
-              'Preview (${_levels.length} levels)',
-              style: Theme.of(context).textTheme.titleMedium,
+          const SizedBox(height: 24),
+          if (_levels.isNotEmpty) ...[
+            SectionHeader(
+              title: 'Level Preview',
+              subtitle: '${_levels.length} levels generated',
+              padding: const EdgeInsets.only(left: 0, right: 0, bottom: 12),
             ),
-          const SizedBox(height: 8),
-          for (final level in _levels)
-            ListTile(
-              title: Text(
-                [
-                  'L${level.index.toString().padLeft(2, '0')}',
-                  level.repsPerSet.join('-'),
-                ].join('  '),
-              ),
-              subtitle: Text(
-                'Sets ${level.repsPerSet.length} • Rest ${level.restSeconds}s',
-              ),
-              trailing: level.isDeload
-                  ? const Chip(
-                      label: Text('Deload'),
-                    )
-                  : null,
-            ),
-          const SizedBox(height: 12),
+            ..._levels.map((level) => _LevelPreviewCard(level: level)),
+          ],
+          const SizedBox(height: 24),
+          const SectionHeader(
+            title: 'Additional Notes',
+            padding: EdgeInsets.only(left: 0, right: 0, bottom: 12),
+          ),
           TextField(
             controller: _notes,
-            decoration: const InputDecoration(labelText: 'Notes'),
-            minLines: 2,
-            maxLines: 4,
+            decoration: const InputDecoration(
+              labelText: 'Notes (optional)',
+              hintText: 'Add any form cues, tips, or modifications...',
+              prefixIcon: Icon(Icons.notes),
+            ),
+            minLines: 3,
+            maxLines: 5,
           ),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -339,42 +433,193 @@ class _TemplateSummary extends StatelessWidget {
     final deloadLabel = template.deloadFrequency > 0
         ? 'Deload every ${template.deloadFrequency} weeks'
         : 'No deload';
-    return Card(
+
+    return GradientCard(
+      gradient: AppColors.accentGradient,
       margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              template.name,
-              style: theme.textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(template.description),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                Chip(
-                  avatar: const Icon(Icons.calendar_today_outlined, size: 18),
-                  label: Text('${template.estimatedWeeks} weeks'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                Chip(
-                  avatar: const Icon(Icons.trending_down_outlined, size: 18),
-                  label: Text(deloadLabel),
-                ),
-                Chip(
-                  avatar: const Icon(Icons.speed_outlined, size: 18),
-                  label: Text(
-                    template.difficulty.toUpperCase(),
+                child: Text(
+                  template.difficulty.toUpperCase(),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1,
                   ),
+                ),
+              ),
+              const Spacer(),
+              Icon(
+                Icons.check_circle,
+                color: Colors.white.withOpacity(0.9),
+                size: 24,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            template.name,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            template.description,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withOpacity(0.9),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _TemplateMetric(
+                icon: Icons.calendar_today_outlined,
+                label: '${template.estimatedWeeks} weeks',
+              ),
+              const SizedBox(width: 20),
+              _TemplateMetric(
+                icon: Icons.trending_down_outlined,
+                label: deloadLabel,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TemplateMetric extends StatelessWidget {
+  const _TemplateMetric({
+    required this.icon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: Colors.white.withOpacity(0.9),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: Colors.white.withOpacity(0.9),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LevelPreviewCard extends StatelessWidget {
+  const _LevelPreviewCard({required this.level});
+
+  final Level level;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return ElevatedInfoCard(
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          LevelBadge(
+            levelIndex: level.index,
+            isDeload: level.isDeload,
+            size: 56,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  level.repsPerSet.join('-'),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontFeatures: const [
+                      FontFeature.tabularFigures(),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.fitness_center,
+                      size: 14,
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${level.repsPerSet.length} sets',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Icon(
+                      Icons.timer_outlined,
+                      size: 14,
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${level.restSeconds}s rest',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          if (level.isDeload)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.warningAmber.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.warningAmber,
+                  width: 1.5,
+                ),
+              ),
+              child: Text(
+                'DELOAD',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: AppColors.warningAmber,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

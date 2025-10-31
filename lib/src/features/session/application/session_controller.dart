@@ -167,7 +167,10 @@ class SessionController extends StateNotifier<SessionState> {
           restEndsAt,
           sessionId: session.id,
         );
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _onRestTick());
+    // Tick more frequently than once per second to avoid visible drift on
+    // some devices/builds, but only emit when the whole second changes.
+    _ticker =
+        Timer.periodic(const Duration(milliseconds: 250), (_) => _onRestTick());
   }
 
   void _onRestTick() {
@@ -178,7 +181,9 @@ class SessionController extends StateNotifier<SessionState> {
         unawaited(
           _completeRest(currentState.session, currentState.nextSetIndex),
         );
-      } else {
+      } else if (remaining != currentState.remainingSeconds) {
+        // Only update when the displayed second actually changes to
+        // prevent unnecessary rebuilds while ensuring smooth countdown.
         state = SessionState.resting(
           session: currentState.session,
           nextSetIndex: currentState.nextSetIndex,

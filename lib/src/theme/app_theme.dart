@@ -138,7 +138,7 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
     ),
 
     // Card Theme with Elevated Shadows
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -301,7 +301,7 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
     ),
 
     // Card Theme with Elevated Shadows and Glow
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       color: AppColors.deepCharcoal,
       shadowColor: AppColors.deepElectricBlue.withOpacity(0.2),
