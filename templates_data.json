@@ -1,0 +1,444 @@
+{
+  "templates": [
+    {
+      "id": "linear_standard",
+      "name": "Linear Progression (Standard)",
+      "description": "Best for most users. Add 1 rep per week with deload every 4 weeks.",
+      "targetAudience": "Regular training experience",
+      "estimatedWeeks": 19,
+      "deloadFrequency": 4,
+      "deloadPercentage": 0.33,
+      "difficulty": "medium",
+      "weeks": [
+        {"week": 1, "sets": 5, "reps": 1, "isDeload": false},
+        {"week": 2, "sets": 5, "reps": 2, "isDeload": false},
+        {"week": 3, "sets": 5, "reps": 3, "isDeload": false},
+        {"week": 4, "sets": 5, "reps": 2, "isDeload": true},
+        {"week": 5, "sets": 5, "reps": 4, "isDeload": false},
+        {"week": 6, "sets": 5, "reps": 5, "isDeload": false},
+        {"week": 7, "sets": 5, "reps": 6, "isDeload": false},
+        {"week": 8, "sets": 5, "reps": 4, "isDeload": true},
+        {"week": 9, "sets": 5, "reps": 7, "isDeload": false},
+        {"week": 10, "sets": 5, "reps": 8, "isDeload": false},
+        {"week": 11, "sets": 5, "reps": 9, "isDeload": false},
+        {"week": 12, "sets": 5, "reps": 6, "isDeload": true},
+        {"week": 13, "sets": 5, "reps": 10, "isDeload": false},
+        {"week": 14, "sets": 5, "reps": 11, "isDeload": false},
+        {"week": 15, "sets": 5, "reps": 12, "isDeload": false},
+        {"week": 16, "sets": 5, "reps": 8, "isDeload": true},
+        {"week": 17, "sets": 5, "reps": 13, "isDeload": false},
+        {"week": 18, "sets": 5, "reps": 14, "isDeload": false},
+        {"week": 19, "sets": 5, "reps": 15, "isDeload": false}
+      ]
+    },
+    {
+      "id": "accelerated",
+      "name": "Accelerated Progression",
+      "description": "Fast track for experienced athletes. Add 2 reps per week.",
+      "targetAudience": "Experienced athletes",
+      "estimatedWeeks": 10,
+      "deloadFrequency": 4,
+      "deloadPercentage": 0.40,
+      "difficulty": "hard",
+      "weeks": [
+        {"week": 1, "sets": 5, "reps": 1, "isDeload": false},
+        {"week": 2, "sets": 5, "reps": 3, "isDeload": false},
+        {"week": 3, "sets": 5, "reps": 5, "isDeload": false},
+        {"week": 4, "sets": 5, "reps": 3, "isDeload": true},
+        {"week": 5, "sets": 5, "reps": 7, "isDeload": false},
+        {"week": 6, "sets": 5, "reps": 9, "isDeload": false},
+        {"week": 7, "sets": 5, "reps": 11, "isDeload": false},
+        {"week": 8, "sets": 5, "reps": 7, "isDeload": true},
+        {"week": 9, "sets": 5, "reps": 13, "isDeload": false},
+        {"week": 10, "sets": 5, "reps": 15, "isDeload": false}
+      ]
+    },
+    {
+      "id": "beginner_friendly",
+      "name": "Beginner-Friendly",
+      "description": "Very gradual progression for those new to training. Build sets first, then reps.",
+      "targetAudience": "Complete beginners",
+      "estimatedWeeks": 24,
+      "deloadFrequency": 4,
+      "deloadPercentage": 0.33,
+      "difficulty": "easy",
+      "weeks": [
+        {"week": 1, "sets": 1, "reps": 1, "isDeload": false},
+        {"week": 2, "sets": 2, "reps": 1, "isDeload": false},
+        {"week": 3, "sets": 3, "reps": 1, "isDeload": false},
+        {"week": 4, "sets": 2, "reps": 1, "isDeload": true},
+        {"week": 5, "sets": 4, "reps": 1, "isDeload": false},
+        {"week": 6, "sets": 5, "reps": 1, "isDeload": false},
+        {"week": 7, "sets": 5, "reps": 2, "isDeload": false},
+        {"week": 8, "sets": 5, "reps": 1, "isDeload": true},
+        {"week": 9, "sets": 5, "reps": 3, "isDeload": false},
+        {"week": 10, "sets": 5, "reps": 4, "isDeload": false},
+        {"week": 11, "sets": 5, "reps": 5, "isDeload": false},
+        {"week": 12, "sets": 5, "reps": 3, "isDeload": true},
+        {"week": 13, "sets": 5, "reps": 6, "isDeload": false},
+        {"week": 14, "sets": 5, "reps": 7, "isDeload": false},
+        {"week": 15, "sets": 5, "reps": 8, "isDeload": false},
+        {"week": 16, "sets": 5, "reps": 5, "isDeload": true},
+        {"week": 17, "sets": 5, "reps": 9, "isDeload": false},
+        {"week": 18, "sets": 5, "reps": 10, "isDeload": false},
+        {"week": 19, "sets": 5, "reps": 11, "isDeload": false},
+        {"week": 20, "sets": 5, "reps": 7, "isDeload": true},
+        {"week": 21, "sets": 5, "reps": 12, "isDeload": false},
+        {"week": 22, "sets": 5, "reps": 13, "isDeload": false},
+        {"week": 23, "sets": 5, "reps": 14, "isDeload": false},
+        {"week": 24, "sets": 5, "reps": 15, "isDeload": false}
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "push_level1",
+      "name": "Wall Push-Ups",
+      "movementPattern": "push",
+      "level": 1,
+      "description": "Push-ups performed against a wall at a standing angle. Perfect for absolute beginners.",
+      "formCues": [
+        "Stand arm's length from wall",
+        "Hands at shoulder height and width",
+        "Keep body straight from head to heels",
+        "Lower chest to wall with control",
+        "Full lockout at top position"
+      ],
+      "videoUrl": null,
+      "masteryTarget": {
+        "sets": 5,
+        "reps": 15,
+        "duration": null
+      },
+      "prerequisites": [],
+      "difficulty": "beginner"
+    },
+    {
+      "id": "push_level2",
+      "name": "Incline Push-Ups",
+      "movementPattern": "push",
+      "level": 2,
+      "description": "Push-ups performed with hands elevated on a bench or box.",
+      "formCues": [
+        "Hands on stable elevated surface (knee height)",
+        "Body in straight plank position",
+        "Elbows at 45-degree angle",
+        "Lower chest to surface",
+        "Controlled tempo: 2 seconds down, 1 second up"
+      ],
+      "videoUrl": null,
+      "masteryTarget": {
+        "sets": 5,
+        "reps": 15,
+        "duration": null
+      },
+      "prerequisites": ["push_level1"],
+      "difficulty": "beginner"
+    },
+    {
+      "id": "push_level3",
+      "name": "Knee Push-Ups",
+      "movementPattern": "push",
+      "level": 3,
+      "description": "Push-ups performed from knees instead of toes.",
+      "formCues": [
+        "Knees on ground, hands shoulder-width",
+        "Straight line from knees to head",
+        "Lower chest to ground",
+        "Full arm extension at top",
+        "Keep core engaged throughout"
+      ],
+      "videoUrl": null,
+      "masteryTarget": {
+        "sets": 5,
+        "reps": 15,
+        "duration": null
+      },
+      "prerequisites": ["push_level2"],
+      "difficulty": "beginner"
+    },
+    {
+      "id": "push_level4",
+      "name": "Regular Push-Ups",
+      "movementPattern": "push",
+      "level": 4,
+      "description": "Standard push-up from plank position.",
+      "formCues": [
+        "Hands slightly wider than shoulders",
+        "Body in perfect plank position",
+        "Chest touches ground",
+        "Elbows at 45 degrees",
+        "Squeeze glutes and core"
+      ],
+      "videoUrl": null,
+      "masteryTarget": {
+        "sets": 5,
+        "reps": 15,
+        "duration": null
+      },
+      "prerequisites": ["push_level3"],
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "push_level5",
+      "name": "Decline Push-Ups",
+      "movementPattern": "push",
+      "level": 5,
+      "description": "Push-ups with feet elevated to increase difficulty.",
+      "formCues": [
+        "Feet on elevated surface (knee height)",
+        "Hands on ground shoulder-width",
+        "Maintain plank position",
+        "Lower chest to ground",
+        "Control movement both directions"
+      ],
+      "videoUrl": null,
+      "masteryTarget": {
+        "sets": 5,
+        "reps": 15,
+        "duration": null
+      },
+      "prerequisites": ["push_level4"],
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "push_level6",
+      "name": "Pseudo Planche Push-Ups",
+      "movementPattern": "push",
+      "level": 6,
+      "description": "Advanced push-up variation with hands positioned lower, creating forward lean.",
+      "formCues": [
+        "Hands at mid-torso level, fingers pointing back",
+        "Lean forward significantly",
+        "Protract scapula at top",
+        "Extremely strict form required",
+        "Full body tension throughout"
+      ],
+      "videoUrl": null,
+      "masteryTarget": {
+        "sets": 5,
+        "reps": 15,
+        "duration": null
+      },
+      "prerequisites": ["push_level5"],
+      "difficulty": "advanced"
+    },
+    {
+      "id": "pull_level1",
+      "name": "Inverted Rows (High Bar)",
+      "movementPattern": "pull",
+      "level": 1,
+      "description": "Horizontal pulling from underneath a high bar.",
+      "formCues": [
+        "Bar at chest height",
+        "Body straight from heels to head",
+        "Pull chest to bar",
+        "Squeeze shoulder blades together",
+        "Full arm extension at bottom"
+      ],
+      "videoUrl": null,
+      "masteryTarget": {
+        "sets": 5,
+        "reps": 15,
+        "duration": null
+      },
+      "prerequisites": [],
+      "difficulty": "beginner"
+    },
+    {
+      "id": "core_hollow_level1",
+      "name": "Hollow Body Hold",
+      "movementPattern": "core_hollow",
+      "level": 1,
+      "description": "Foundational gymnastics core hold.",
+      "formCues": [
+        "Lay on back, lower back pressed to ground",
+        "Arms extended overhead",
+        "Legs straight and together",
+        "Lift shoulders and feet off ground",
+        "Maintain posterior pelvic tilt"
+      ],
+      "videoUrl": null,
+      "masteryTarget": {
+        "sets": 5,
+        "reps": null,
+        "duration": 60
+      },
+      "prerequisites": [],
+      "difficulty": "beginner"
+    },
+    {
+      "id": "squat_level1",
+      "name": "Assisted Squats",
+      "movementPattern": "legs",
+      "level": 1,
+      "description": "Bodyweight squat with assistance for balance.",
+      "formCues": [
+        "Hold onto stable support lightly",
+        "Feet shoulder-width apart",
+        "Descend to full depth (hips below knees)",
+        "Keep chest up, knees tracking over toes",
+        "Stand fully at top"
+      ],
+      "videoUrl": null,
+      "masteryTarget": {
+        "sets": 5,
+        "reps": 15,
+        "duration": null
+      },
+      "prerequisites": [],
+      "difficulty": "beginner"
+    }
+  ],
+  "movementPatterns": [
+    {
+      "id": "push",
+      "name": "Horizontal Push",
+      "description": "Pushing movements targeting chest, shoulders, and triceps",
+      "muscleGroups": ["chest", "shoulders", "triceps"]
+    },
+    {
+      "id": "pull",
+      "name": "Horizontal/Vertical Pull",
+      "description": "Pulling movements targeting back and biceps",
+      "muscleGroups": ["back", "biceps", "forearms"]
+    },
+    {
+      "id": "legs",
+      "name": "Lower Body",
+      "description": "Squatting and leg movements",
+      "muscleGroups": ["quads", "glutes", "hamstrings", "calves"]
+    },
+    {
+      "id": "core_hollow",
+      "name": "Core - Hollow Position",
+      "description": "Anterior core strength and compression",
+      "muscleGroups": ["abs", "hip_flexors"]
+    },
+    {
+      "id": "core_arch",
+      "name": "Core - Arch Position",
+      "description": "Posterior chain and extension strength",
+      "muscleGroups": ["lower_back", "glutes", "hamstrings"]
+    },
+    {
+      "id": "vertical_push",
+      "name": "Vertical Push",
+      "description": "Handstand and overhead pressing movements",
+      "muscleGroups": ["shoulders", "triceps", "upper_back"]
+    }
+  ],
+  "userSettings": {
+    "defaultTemplate": "linear_standard",
+    "restTimerDuration": 90,
+    "autoStartRestTimer": true,
+    "soundAlerts": true,
+    "vibrationAlerts": true,
+    "deloadFrequency": 4,
+    "deloadPercentage": 0.33,
+    "workoutReminders": true,
+    "reminderDays": ["monday", "wednesday", "friday"],
+    "reminderTime": "18:00"
+  },
+  "achievements": [
+    {
+      "id": "first_workout",
+      "name": "Journey Begins",
+      "description": "Complete your first workout",
+      "icon": "🎯",
+      "type": "milestone"
+    },
+    {
+      "id": "first_mastery",
+      "name": "First Mastery",
+      "description": "Master your first exercise",
+      "icon": "🏆",
+      "type": "mastery"
+    },
+    {
+      "id": "three_masteries",
+      "name": "Dedicated Athlete",
+      "description": "Master 3 exercises",
+      "icon": "💪",
+      "type": "mastery"
+    },
+    {
+      "id": "six_masteries",
+      "name": "Foundation Complete",
+      "description": "Master 6 exercises",
+      "icon": "🎖️",
+      "type": "mastery"
+    },
+    {
+      "id": "seven_day_streak",
+      "name": "Week Warrior",
+      "description": "Train 7 days in a row",
+      "icon": "🔥",
+      "type": "consistency"
+    },
+    {
+      "id": "thirty_day_streak",
+      "name": "Consistency King",
+      "description": "Train 30 days in a row",
+      "icon": "👑",
+      "type": "consistency"
+    },
+    {
+      "id": "hundred_workouts",
+      "name": "Century Club",
+      "description": "Complete 100 total workouts",
+      "icon": "💯",
+      "type": "milestone"
+    },
+    {
+      "id": "perfect_week",
+      "name": "Perfect Week",
+      "description": "Complete all planned workouts in a week",
+      "icon": "✨",
+      "type": "consistency"
+    },
+    {
+      "id": "deload_discipline",
+      "name": "Deload Discipline",
+      "description": "Complete 5 deload weeks (injury prevention!)",
+      "icon": "🛌",
+      "type": "special"
+    },
+    {
+      "id": "elite_athlete",
+      "name": "Elite Bodyweight Athlete",
+      "description": "Master all Level 6 exercises",
+      "icon": "🥇",
+      "type": "ultimate"
+    }
+  ],
+  "autoRegulationRules": {
+    "ratings": {
+      "1": {
+        "label": "Too Easy",
+        "action": "Jump forward +2 reps or next step"
+      },
+      "2": {
+        "label": "Easy",
+        "action": "Progress faster (+1 rep next session)"
+      },
+      "3": {
+        "label": "Just Right",
+        "action": "Continue as planned"
+      },
+      "4": {
+        "label": "Hard",
+        "action": "Repeat current week"
+      },
+      "5": {
+        "label": "Too Hard",
+        "action": "Step back -1 rep or previous week"
+      }
+    },
+    "failedSetThresholds": {
+      "1": "Continue, note for next session",
+      "2": "Reduce reps by 1 next session",
+      "3": "Return to previous week's protocol"
+    }
+  }
+}
