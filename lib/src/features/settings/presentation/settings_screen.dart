@@ -31,6 +31,7 @@ class _SettingsForm extends ConsumerStatefulWidget {
 class _SettingsFormState extends ConsumerState<_SettingsForm> {
   late int rest = widget.settings.defaultRestSeconds;
   late bool precise = widget.settings.preciseAlarms;
+  late bool keepAwake = widget.settings.keepAwakeDuringRest;
   late CountdownBeeps beeps = widget.settings.beeps;
 
   @override
@@ -44,8 +45,7 @@ class _SettingsFormState extends ConsumerState<_SettingsForm> {
           children: [
             Expanded(
               child: TextField(
-                decoration:
-                    const InputDecoration(labelText: 'Default Rest (s)'),
+                decoration: const InputDecoration(labelText: 'Default Rest (s)'),
                 keyboardType: TextInputType.number,
                 controller: TextEditingController(text: rest.toString()),
                 onChanged: (v) => rest = int.tryParse(v) ?? rest,
@@ -58,6 +58,13 @@ class _SettingsFormState extends ConsumerState<_SettingsForm> {
           value: precise,
           onChanged: (v) => setState(() => precise = v),
           title: const Text('Precise Alarms (Android 12+)'),
+        ),
+        const SizedBox(height: 12),
+        SwitchListTile(
+          value: keepAwake,
+          onChanged: (v) => setState(() => keepAwake = v),
+          title: const Text('Keep screen awake during rest'),
+          subtitle: const Text('Prevents display sleep while the rest timer runs'),
         ),
         const SizedBox(height: 12),
         DropdownButtonFormField<CountdownBeeps>(
@@ -75,14 +82,14 @@ class _SettingsFormState extends ConsumerState<_SettingsForm> {
             final updated = TimerSettings(
               defaultRestSeconds: rest,
               preciseAlarms: precise,
+              keepAwakeDuringRest: keepAwake,
               beeps: beeps,
             );
             await ref.read(timerSettingsProvider.notifier).save(updated);
             if (!mounted) {
               return;
             }
-            messenger
-                .showSnackBar(const SnackBar(content: Text('Saved')));
+            messenger.showSnackBar(const SnackBar(content: Text('Saved')));
           },
           child: const Text('Save'),
         ),

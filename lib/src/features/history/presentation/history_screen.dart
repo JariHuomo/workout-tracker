@@ -27,14 +27,13 @@ class HistoryScreen extends ConsumerWidget {
             ? const _EmptyHistory()
             : RefreshIndicator(
                 onRefresh: () async {
-                  await ref.refresh(historySessionsProvider.future);
+                  final _ = await ref.refresh(historySessionsProvider.future);
                 },
                 child: ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemBuilder: (context, index) {
                     final session = sessions[index];
-                    final exercise =
-                        exerciseMap[session.exerciseId]?.name ?? 'Unknown';
+                    final exercise = exerciseMap[session.exerciseId]?.name ?? 'Unknown';
                     return _HistoryTile(
                       session: session,
                       exerciseName: exercise,
@@ -46,8 +45,7 @@ class HistoryScreen extends ConsumerWidget {
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) {
-          final message =
-              error is Failure ? error.message : 'Failed to load history';
+          final message = error is Failure ? error.message : 'Failed to load history';
           return _ErrorState(
             message: message,
             onRetry: () => ref.invalidate(historySessionsProvider),
@@ -58,7 +56,7 @@ class HistoryScreen extends ConsumerWidget {
   }
 }
 
-class _HistoryTile extends StatelessWidget {
+class _HistoryTile extends ConsumerWidget {
   const _HistoryTile({
     required this.session,
     required this.exerciseName,
@@ -68,16 +66,13 @@ class _HistoryTile extends StatelessWidget {
   final String exerciseName;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final startedAt = _formatDateTime(session.startedAt);
     final resultLabel = session.passed ? 'Passed' : 'Repeat';
     final resultColor = session.passed
         ? Theme.of(context).colorScheme.primary
         : Theme.of(context).colorScheme.error;
-    final attemptSummary = session.attempts
-        .map((attempt) => '${attempt.reps}')
-        .toList()
-        .join(', ');
+    final attemptSummary = session.attempts.map((attempt) => '${attempt.reps}').toList().join(', ');
     final target = session.targetRepsPerSet.join(', ');
 
     return Card(
@@ -96,8 +91,7 @@ class _HistoryTile extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: resultColor.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(12),
@@ -118,10 +112,9 @@ class _HistoryTile extends StatelessWidget {
             Text('Target: $target'),
             const SizedBox(height: 4),
             Text(
-              attemptSummary.isEmpty
-                  ? 'No sets logged'
-                  : 'Logged: $attemptSummary',
+              attemptSummary.isEmpty ? 'No sets logged' : 'Logged: $attemptSummary',
             ),
+            _SessionRatingStars(sessionId: session.id),
           ],
         ),
       ),
@@ -136,6 +129,36 @@ class _HistoryTile extends StatelessWidget {
     final clock =
         '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
     return '$date $clock';
+  }
+}
+
+class _SessionRatingStars extends ConsumerWidget {
+  const _SessionRatingStars({required this.sessionId});
+  final String sessionId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ratingAsync = ref.watch(sessionRatingProvider(sessionId));
+    return ratingAsync.when(
+      data: (rating) {
+        if (rating == null) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Row(
+            children: List.generate(5, (index) {
+              final filled = index < rating;
+              return Icon(
+                filled ? Icons.star : Icons.star_border,
+                color: Colors.amber,
+                size: 18,
+              );
+            }),
+          ),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
   }
 }
 

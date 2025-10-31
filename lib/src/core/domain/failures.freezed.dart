@@ -56,9 +56,7 @@ mixin _$Failure {
   }) =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of Failure
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $FailureCopyWith<Failure> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -80,8 +78,6 @@ class _$FailureCopyWithImpl<$Res, $Val extends Failure>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Failure
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -115,8 +111,6 @@ class __$$GeneralFailureImplCopyWithImpl<$Res>
       _$GeneralFailureImpl _value, $Res Function(_$GeneralFailureImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Failure
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -155,9 +149,7 @@ class _$GeneralFailureImpl implements _GeneralFailure {
   @override
   int get hashCode => Object.hash(runtimeType, message);
 
-  /// Create a copy of Failure
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$GeneralFailureImplCopyWith<_$GeneralFailureImpl> get copyWith =>
@@ -232,11 +224,8 @@ abstract class _GeneralFailure implements Failure {
 
   @override
   String get message;
-
-  /// Create a copy of Failure
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$GeneralFailureImplCopyWith<_$GeneralFailureImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -260,8 +249,6 @@ class __$$StorageFailureImplCopyWithImpl<$Res>
       _$StorageFailureImpl _value, $Res Function(_$StorageFailureImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Failure
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -300,9 +287,7 @@ class _$StorageFailureImpl implements _StorageFailure {
   @override
   int get hashCode => Object.hash(runtimeType, message);
 
-  /// Create a copy of Failure
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$StorageFailureImplCopyWith<_$StorageFailureImpl> get copyWith =>
@@ -377,11 +362,8 @@ abstract class _StorageFailure implements Failure {
 
   @override
   String get message;
-
-  /// Create a copy of Failure
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$StorageFailureImplCopyWith<_$StorageFailureImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

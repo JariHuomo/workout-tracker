@@ -24,12 +24,8 @@ mixin _$SetAttempt {
   int get reps => throw _privateConstructorUsedError;
   DateTime get timestamp => throw _privateConstructorUsedError;
 
-  /// Serializes this SetAttempt to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of SetAttempt
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $SetAttemptCopyWith<SetAttempt> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -53,8 +49,6 @@ class _$SetAttemptCopyWithImpl<$Res, $Val extends SetAttempt>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of SetAttempt
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -98,8 +92,6 @@ class __$$SetAttemptImplCopyWithImpl<$Res>
       _$SetAttemptImpl _value, $Res Function(_$SetAttemptImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of SetAttempt
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -157,13 +149,11 @@ class _$SetAttemptImpl implements _SetAttempt {
                 other.timestamp == timestamp));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, setIndex, reps, timestamp);
 
-  /// Create a copy of SetAttempt
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$SetAttemptImplCopyWith<_$SetAttemptImpl> get copyWith =>
@@ -192,11 +182,8 @@ abstract class _SetAttempt implements SetAttempt {
   int get reps;
   @override
   DateTime get timestamp;
-
-  /// Create a copy of SetAttempt
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$SetAttemptImplCopyWith<_$SetAttemptImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -215,13 +202,10 @@ mixin _$WorkoutSession {
   DateTime? get startedAt => throw _privateConstructorUsedError;
   DateTime? get endedAt => throw _privateConstructorUsedError;
   bool get passed => throw _privateConstructorUsedError;
+  int? get difficulty => throw _privateConstructorUsedError;
 
-  /// Serializes this WorkoutSession to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of WorkoutSession
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $WorkoutSessionCopyWith<WorkoutSession> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -240,7 +224,8 @@ abstract class $WorkoutSessionCopyWith<$Res> {
       List<SetAttempt> attempts,
       DateTime? startedAt,
       DateTime? endedAt,
-      bool passed});
+      bool passed,
+      int? difficulty});
 }
 
 /// @nodoc
@@ -253,8 +238,6 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of WorkoutSession
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -266,6 +249,7 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
     Object? startedAt = freezed,
     Object? endedAt = freezed,
     Object? passed = null,
+    Object? difficulty = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -300,6 +284,10 @@ class _$WorkoutSessionCopyWithImpl<$Res, $Val extends WorkoutSession>
           ? _value.passed
           : passed // ignore: cast_nullable_to_non_nullable
               as bool,
+      difficulty: freezed == difficulty
+          ? _value.difficulty
+          : difficulty // ignore: cast_nullable_to_non_nullable
+              as int?,
     ) as $Val);
   }
 }
@@ -320,7 +308,8 @@ abstract class _$$WorkoutSessionImplCopyWith<$Res>
       List<SetAttempt> attempts,
       DateTime? startedAt,
       DateTime? endedAt,
-      bool passed});
+      bool passed,
+      int? difficulty});
 }
 
 /// @nodoc
@@ -331,8 +320,6 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
       _$WorkoutSessionImpl _value, $Res Function(_$WorkoutSessionImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of WorkoutSession
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -344,6 +331,7 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
     Object? startedAt = freezed,
     Object? endedAt = freezed,
     Object? passed = null,
+    Object? difficulty = freezed,
   }) {
     return _then(_$WorkoutSessionImpl(
       id: null == id
@@ -378,6 +366,10 @@ class __$$WorkoutSessionImplCopyWithImpl<$Res>
           ? _value.passed
           : passed // ignore: cast_nullable_to_non_nullable
               as bool,
+      difficulty: freezed == difficulty
+          ? _value.difficulty
+          : difficulty // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -393,7 +385,8 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
       final List<SetAttempt> attempts = const <SetAttempt>[],
       this.startedAt,
       this.endedAt,
-      this.passed = false})
+      this.passed = false,
+      this.difficulty})
       : _targetRepsPerSet = targetRepsPerSet,
         _attempts = attempts;
 
@@ -431,10 +424,12 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
   @override
   @JsonKey()
   final bool passed;
+  @override
+  final int? difficulty;
 
   @override
   String toString() {
-    return 'WorkoutSession(id: $id, exerciseId: $exerciseId, levelIndex: $levelIndex, targetRepsPerSet: $targetRepsPerSet, attempts: $attempts, startedAt: $startedAt, endedAt: $endedAt, passed: $passed)';
+    return 'WorkoutSession(id: $id, exerciseId: $exerciseId, levelIndex: $levelIndex, targetRepsPerSet: $targetRepsPerSet, attempts: $attempts, startedAt: $startedAt, endedAt: $endedAt, passed: $passed, difficulty: $difficulty)';
   }
 
   @override
@@ -453,10 +448,12 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
             (identical(other.startedAt, startedAt) ||
                 other.startedAt == startedAt) &&
             (identical(other.endedAt, endedAt) || other.endedAt == endedAt) &&
-            (identical(other.passed, passed) || other.passed == passed));
+            (identical(other.passed, passed) || other.passed == passed) &&
+            (identical(other.difficulty, difficulty) ||
+                other.difficulty == difficulty));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -467,11 +464,10 @@ class _$WorkoutSessionImpl implements _WorkoutSession {
       const DeepCollectionEquality().hash(_attempts),
       startedAt,
       endedAt,
-      passed);
+      passed,
+      difficulty);
 
-  /// Create a copy of WorkoutSession
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$WorkoutSessionImplCopyWith<_$WorkoutSessionImpl> get copyWith =>
@@ -495,7 +491,8 @@ abstract class _WorkoutSession implements WorkoutSession {
       final List<SetAttempt> attempts,
       final DateTime? startedAt,
       final DateTime? endedAt,
-      final bool passed}) = _$WorkoutSessionImpl;
+      final bool passed,
+      final int? difficulty}) = _$WorkoutSessionImpl;
 
   factory _WorkoutSession.fromJson(Map<String, dynamic> json) =
       _$WorkoutSessionImpl.fromJson;
@@ -516,11 +513,10 @@ abstract class _WorkoutSession implements WorkoutSession {
   DateTime? get endedAt;
   @override
   bool get passed;
-
-  /// Create a copy of WorkoutSession
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  int? get difficulty;
+  @override
+  @JsonKey(ignore: true)
   _$$WorkoutSessionImplCopyWith<_$WorkoutSessionImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

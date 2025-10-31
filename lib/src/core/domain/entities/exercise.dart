@@ -15,8 +15,7 @@ class Exercise with _$Exercise {
     @Default('') String notes,
   }) = _Exercise;
 
-  factory Exercise.fromJson(Map<String, dynamic> json) =>
-      _$ExerciseFromJson(json);
+  factory Exercise.fromJson(Map<String, dynamic> json) => _$ExerciseFromJson(json);
 }
 
 @freezed

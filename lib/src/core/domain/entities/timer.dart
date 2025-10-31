@@ -10,9 +10,10 @@ class TimerSettings with _$TimerSettings {
   const factory TimerSettings({
     @Default(90) int defaultRestSeconds,
     @Default(false) bool preciseAlarms,
+    // When enabled, keeps the device screen awake during rest periods.
+    @Default(false) bool keepAwakeDuringRest,
     @Default(CountdownBeeps.last3) CountdownBeeps beeps,
   }) = _TimerSettings;
 
-  factory TimerSettings.fromJson(Map<String, dynamic> json) =>
-      _$TimerSettingsFromJson(json);
+  factory TimerSettings.fromJson(Map<String, dynamic> json) => _$TimerSettingsFromJson(json);
 }

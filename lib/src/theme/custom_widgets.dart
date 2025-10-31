@@ -29,8 +29,7 @@ class GradientCard extends StatelessWidget {
         borderRadius: borderRadius ?? BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: (gradient?.colors.first ?? AppColors.deepElectricBlue)
-                .withOpacity(0.3),
+            color: (gradient?.colors.first ?? AppColors.deepElectricBlue).withOpacity(0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -90,10 +89,8 @@ class ElevatedInfoCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: borderColor ??
-              (isDark
-                  ? AppColors.smokeGray.withOpacity(0.3)
-                  : AppColors.lightGray),
+          color:
+              borderColor ?? (isDark ? AppColors.smokeGray.withOpacity(0.3) : AppColors.lightGray),
           width: 1,
         ),
       ),
@@ -134,8 +131,7 @@ class IconBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(size / 3),
         boxShadow: [
           BoxShadow(
-            color: (gradient?.colors.first ?? AppColors.neonCyan)
-                .withOpacity(0.3),
+            color: (gradient?.colors.first ?? AppColors.neonCyan).withOpacity(0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -292,34 +288,46 @@ class LevelBadge extends StatelessWidget {
       backgroundColor = AppColors.deepElectricBlue;
       textColor = Colors.white;
     } else {
-      backgroundColor =
-          isDark ? AppColors.carbonGray : AppColors.softGray;
+      backgroundColor = isDark ? AppColors.carbonGray : AppColors.softGray;
       textColor = theme.colorScheme.onSurface.withOpacity(0.6);
     }
 
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: isActive
-            ? [
-                BoxShadow(
-                  color: backgroundColor.withOpacity(0.4),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : null,
-      ),
-      child: Center(
-        child: Text(
-          'L${levelIndex.toString().padLeft(2, '0')}',
-          style: theme.textTheme.labelLarge?.copyWith(
-            color: textColor,
-            fontWeight: FontWeight.w700,
-            fontSize: size * 0.3,
+    final semanticLabel = StringBuffer('Level ${levelIndex.toString().padLeft(2, '0')}');
+    if (isDeload) {
+      semanticLabel.write(', deload');
+    }
+    if (isActive && !isDeload) {
+      semanticLabel.write(', current');
+    }
+
+    return Semantics(
+      label: semanticLabel.toString(),
+      button: false,
+      container: true,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: backgroundColor.withOpacity(0.4),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Center(
+          child: Text(
+            'L${levelIndex.toString().padLeft(2, '0')}',
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w700,
+              fontSize: size * 0.3,
+            ),
           ),
         ),
       ),
@@ -347,8 +355,7 @@ class SectionHeader extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: padding ??
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
           Expanded(
@@ -468,8 +475,7 @@ class AnimatedButton extends StatefulWidget {
   State<AnimatedButton> createState() => _AnimatedButtonState();
 }
 
-class _AnimatedButtonState extends State<AnimatedButton>
-    with SingleTickerProviderStateMixin {
+class _AnimatedButtonState extends State<AnimatedButton> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 

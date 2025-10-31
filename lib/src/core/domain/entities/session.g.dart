@@ -39,6 +39,7 @@ _$WorkoutSessionImpl _$$WorkoutSessionImplFromJson(Map<String, dynamic> json) =>
           ? null
           : DateTime.parse(json['endedAt'] as String),
       passed: json['passed'] as bool? ?? false,
+      difficulty: (json['difficulty'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$WorkoutSessionImplToJson(
@@ -52,4 +53,5 @@ Map<String, dynamic> _$$WorkoutSessionImplToJson(
       'startedAt': instance.startedAt?.toIso8601String(),
       'endedAt': instance.endedAt?.toIso8601String(),
       'passed': instance.passed,
+      'difficulty': instance.difficulty,
     };

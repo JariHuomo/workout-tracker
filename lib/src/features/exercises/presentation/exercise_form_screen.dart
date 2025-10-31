@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/template.dart';
+import 'package:workouttracker/src/core/domain/usecases/generate_levels_manual.dart';
 import 'package:workouttracker/src/theme/app_theme.dart';
 import 'package:workouttracker/src/theme/custom_widgets.dart';
 
@@ -23,6 +25,8 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
   late final TextEditingController _startRepsController;
   late final TextEditingController _endRepsController;
   late final TextEditingController _stepController;
+  late final TextEditingController _deloadEveryController;
+  late final TextEditingController _deloadPctController;
 
   int _sets = 5;
   int _startReps = 1;
@@ -31,6 +35,10 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
   int _rest = 90;
   List<Level> _levels = const [];
   ProgressionTemplate? _selectedTemplate;
+  ManualGenerationMode _mode = ManualGenerationMode.ladder;
+  bool _enableDeloads = false;
+  int _deloadEvery = 4;
+  double _deloadPct = 0.33;
 
   @override
   void initState() {
@@ -42,6 +50,10 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
     _startRepsController = TextEditingController(text: _startReps.toString());
     _endRepsController = TextEditingController(text: _endReps.toString());
     _stepController = TextEditingController(text: _step.toString());
+    _deloadEveryController =
+        TextEditingController(text: _deloadEvery.toString());
+    _deloadPctController =
+        TextEditingController(text: (_deloadPct * 100).toStringAsFixed(0));
   }
 
   void _applyTemplate(ProgressionTemplate template) {
@@ -65,22 +77,27 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
     _startRepsController.dispose();
     _endRepsController.dispose();
     _stepController.dispose();
+    _deloadEveryController.dispose();
+    _deloadPctController.dispose();
     super.dispose();
   }
 
   void _generate() {
-    final levels = <Level>[];
-    var idx = 1;
-    for (var reps = _startReps; reps <= _endReps; reps += _step) {
-      levels.add(
-        Level(
-          index: idx,
-          repsPerSet: List.filled(_sets, reps),
-          restSeconds: _rest,
-        ),
-      );
-      idx++;
-    }
+    final generator = ref.read(generateLevelsManualProvider);
+    // sanitize end >= start here to avoid empty ranges
+    final start = _startReps < 1 ? 1 : _startReps;
+    final end = _endReps < start ? start : _endReps;
+    final step = _step < 1 ? 1 : _step;
+    final levels = generator(
+      sets: _sets,
+      startReps: start,
+      endReps: end,
+      step: step,
+      restSeconds: _rest,
+      mode: _mode,
+      deloadEvery: _enableDeloads ? _deloadEvery : null,
+      deloadPct: _enableDeloads ? _deloadPct : null,
+    );
     setState(() {
       _selectedTemplate = null;
       _levels = levels;
@@ -111,12 +128,17 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
     required int max,
     required ValueChanged<int> setter,
     bool enabled = true,
+    IconData? icon,
   }) {
     return TextField(
       controller: controller,
       keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       enabled: enabled,
-      decoration: InputDecoration(labelText: label),
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: icon != null ? Icon(icon) : null,
+      ),
       onChanged: (_) {
         final parsed = int.tryParse(controller.text);
         if (parsed == null) {
@@ -155,7 +177,8 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
               icon: const Icon(Icons.check, size: 20),
               label: const Text('Save'),
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               ),
             ),
           ),
@@ -206,7 +229,8 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                           Text(
                             'Use a pre-built progression plan',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              color:
+                                  theme.colorScheme.onSurface.withOpacity(0.6),
                             ),
                           ),
                         ],
@@ -300,12 +324,13 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                   max: 999,
                   setter: (value) => _sets = value,
                   enabled: _selectedTemplate == null,
+                  icon: Icons.fitness_center,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
                 child: _buildNumberField(
-                  label: 'Rest (s)',
+                  label: 'Rest (seconds)',
                   controller: _restController,
                   min: 1,
                   max: 3600,
@@ -316,47 +341,229 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                         level.copyWith(restSeconds: value),
                     ];
                   },
+                  icon: Icons.timer_outlined,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildNumberField(
-                  label: 'Start reps',
-                  controller: _startRepsController,
-                  min: 1,
-                  max: 999,
-                  setter: (value) => _startReps = value,
-                  enabled: _selectedTemplate == null,
-                ),
+          const SizedBox(height: 16),
+
+          // Progression Parameters Card
+          if (_selectedTemplate == null) ...[
+            ElevatedInfoCard(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.trending_up,
+                        size: 20,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Progression Range',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildNumberField(
+                          label: 'Start reps',
+                          controller: _startRepsController,
+                          min: 1,
+                          max: 999,
+                          setter: (value) => _startReps = value,
+                          enabled: true,
+                          icon: Icons.play_arrow,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildNumberField(
+                          label: 'End reps',
+                          controller: _endRepsController,
+                          min: 1,
+                          max: 999,
+                          setter: (value) => _endReps = value,
+                          enabled: true,
+                          icon: Icons.flag_outlined,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildNumberField(
+                          label: 'Increment by',
+                          controller: _stepController,
+                          min: 1,
+                          max: 999,
+                          setter: (value) => _step = value,
+                          enabled: true,
+                          icon: Icons.stairs,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: DropdownButtonFormField<ManualGenerationMode>(
+                          value: _mode,
+                          decoration: const InputDecoration(
+                            labelText: 'Mode',
+                            prefixIcon: Icon(Icons.tune),
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: ManualGenerationMode.uniform,
+                              child: Text('Uniform'),
+                            ),
+                            DropdownMenuItem(
+                              value: ManualGenerationMode.ladder,
+                              child: Text('Incremental'),
+                            ),
+                          ],
+                          onChanged: (mode) => setState(
+                              () => _mode = mode ?? ManualGenerationMode.uniform),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_endReps > 15) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: theme.colorScheme.outline.withOpacity(0.2),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.lightbulb_outline,
+                            size: 18,
+                            color: theme.colorScheme.primary.withOpacity(0.8),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              '15 reps per set is a common mastery target. You set $_endReps.',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildNumberField(
-                  label: 'End reps',
-                  controller: _endRepsController,
-                  min: 1,
-                  max: 999,
-                  setter: (value) => _endReps = value,
-                  enabled: _selectedTemplate == null,
-                ),
+            ),
+            const SizedBox(height: 16),
+
+            // Deload Configuration Card
+            ElevatedInfoCard(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.spa_outlined,
+                            size: 20,
+                            color: theme.colorScheme.secondary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Recovery Deloads',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Switch.adaptive(
+                        value: _enableDeloads,
+                        onChanged: (v) => setState(() => _enableDeloads = v),
+                      ),
+                    ],
+                  ),
+                  if (_enableDeloads) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Insert easier levels periodically for recovery',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildNumberField(
+                            label: 'Every N levels',
+                            controller: _deloadEveryController,
+                            min: 2,
+                            max: 99,
+                            setter: (value) => _deloadEvery = value,
+                            enabled: true,
+                            icon: Icons.repeat,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: TextField(
+                            controller: _deloadPctController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: const InputDecoration(
+                              labelText: 'Reduction',
+                              suffixText: '%',
+                              prefixIcon: Icon(Icons.trending_down),
+                            ),
+                            onChanged: (_) {
+                              final parsed =
+                                  int.tryParse(_deloadPctController.text);
+                              if (parsed == null) return;
+                              final clamped = parsed.clamp(1, 90).toInt();
+                              if (clamped != parsed) {
+                                _deloadPctController
+                                  ..text = clamped.toString()
+                                  ..selection = TextSelection.collapsed(
+                                    offset: _deloadPctController.text.length,
+                                  );
+                              }
+                              setState(() {
+                                _deloadPct = clamped / 100;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildNumberField(
-                  label: 'Step',
-                  controller: _stepController,
-                  min: 1,
-                  max: 999,
-                  setter: (value) => _step = value,
-                  enabled: _selectedTemplate == null,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
           const SizedBox(height: 20),
           Row(
             children: [
@@ -443,7 +650,8 @@ class _TemplateSummary extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
@@ -577,6 +785,19 @@ class _LevelPreviewCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '${level.repsPerSet.length} sets',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Icon(
+                      Icons.summarize_outlined,
+                      size: 14,
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Total ${level.repsPerSet.fold<int>(0, (s, v) => s + v)} reps',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withOpacity(0.6),
                       ),

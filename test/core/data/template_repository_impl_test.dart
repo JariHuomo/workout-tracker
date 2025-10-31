@@ -25,8 +25,7 @@ void main() {
   }
   ''';
 
-  test('TemplateRepositoryImpl parses templates from local data source',
-      () async {
+  test('TemplateRepositoryImpl parses templates from local data source', () async {
     final bundle = _FakeBundle(jsonString);
     final dataSource = TemplateLocalDataSource(bundle: bundle);
     final repository = TemplateRepositoryImpl(dataSource);
@@ -53,4 +52,7 @@ class _FakeBundle extends AssetBundle {
 
   @override
   Future<String> loadString(String key, {bool cache = true}) async => _response;
+
+  @override
+  Future<ByteData> load(String key) async => ByteData(0);
 }

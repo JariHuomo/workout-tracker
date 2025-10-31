@@ -14,7 +14,7 @@ void main() {
       exerciseId: 'ex1',
       levelIndex: 0,
       targetRepsPerSet: const [5, 5],
-      attempts: const [
+      attempts: [
         SetAttempt(
           setIndex: 0,
           reps: 5,
@@ -44,7 +44,7 @@ void main() {
             (ref) async => [session],
           ),
           exercisesProvider.overrideWith(
-            (ref) => _FakeExercisesNotifier([exercise]),
+            (ref) => _FakeExercisesNotifier(ref, [exercise]),
           ),
         ],
         child: const MaterialApp(
@@ -61,8 +61,10 @@ void main() {
   });
 }
 
-class _FakeExercisesNotifier
-    extends StateNotifier<AsyncValue<List<Exercise>>> {
-  _FakeExercisesNotifier(List<Exercise> exercises)
-      : super(AsyncValue.data(exercises));
+class _FakeExercisesNotifier extends ExercisesNotifier {
+  _FakeExercisesNotifier(Ref ref, List<Exercise> exercises) : super(ref) {
+    state = AsyncValue.data(exercises);
+  }
+  @override
+  Future<void> refresh() async {}
 }

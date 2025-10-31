@@ -12,4 +12,3 @@ class GetSessions {
     return _repository.getSessions();
   }
 }
-

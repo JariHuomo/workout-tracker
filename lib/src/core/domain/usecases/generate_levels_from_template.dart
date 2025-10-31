@@ -23,4 +23,3 @@ class GenerateLevelsFromTemplate {
         .toList();
   }
 }
-

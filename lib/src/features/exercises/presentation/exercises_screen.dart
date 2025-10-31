@@ -61,8 +61,7 @@ class ExercisesScreen extends ConsumerWidget {
             ? EmptyStateWidget(
                 icon: Icons.fitness_center,
                 title: 'No Exercises Yet',
-                message:
-                    'Create your first exercise to start your strength journey',
+                message: 'Create your first exercise to start your strength journey',
                 actionLabel: 'Create Exercise',
                 onAction: () => context.push('/exercises/new'),
               )
@@ -89,18 +88,15 @@ class _ExerciseCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final current =
-        (ex.levels.isEmpty || ex.currentLevelIndex >= ex.levels.length)
-            ? null
-            : ex.levels[ex.currentLevelIndex];
+    final current = (ex.levels.isEmpty || ex.currentLevelIndex >= ex.levels.length)
+        ? null
+        : ex.levels[ex.currentLevelIndex];
 
-    final progress = ex.levels.isEmpty
-        ? 0.0
-        : (ex.currentLevelIndex + 1) / ex.levels.length;
+    final progress = ex.levels.isEmpty ? 0.0 : (ex.currentLevelIndex + 1) / ex.levels.length;
 
     return ElevatedInfoCard(
       onTap: () => context.push('/exercises/${ex.id}'),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -109,12 +105,39 @@ class _ExerciseCard extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               if (current != null) ...[
-                LevelBadge(
-                  levelIndex: current.index,
-                  isActive: true,
-                  size: 48,
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.deepElectricBlue,
+                        AppColors.vibrantPurple,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.deepElectricBlue.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      'L${current.index + 1}',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 18),
               ],
               Expanded(
                 child: Column(
@@ -124,10 +147,11 @@ class _ExerciseCard extends ConsumerWidget {
                       ex.name,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
+                        fontSize: 24,
                       ),
                     ),
                     if (ex.levels.isNotEmpty) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
                         'Level ${ex.currentLevelIndex + 1} of ${ex.levels.length}',
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -180,40 +204,96 @@ class _ExerciseCard extends ConsumerWidget {
 
           // Progress Bar
           if (ex.levels.isNotEmpty) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Overall Progress',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    minHeight: 12,
-                    backgroundColor: theme.brightness == Brightness.dark
-                        ? AppColors.carbonGray
-                        : AppColors.softGray,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.deepElectricBlue,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'OVERALL PROGRESS',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      ),
                     ),
-                  ),
+                    Text(
+                      '${(progress * 100).round()}%',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: AppColors.deepElectricBlue,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Stack(
+                  children: [
+                    Container(
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: theme.brightness == Brightness.dark
+                            ? AppColors.carbonGray
+                            : AppColors.softGray,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    FractionallySizedBox(
+                      widthFactor: progress,
+                      child: Container(
+                        height: 14,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              AppColors.deepElectricBlue,
+                              AppColors.vibrantPurple,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.deepElectricBlue.withOpacity(0.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
           ],
 
           // Action Button
-          SizedBox(
+          Container(
             width: double.infinity,
+            decoration: current == null
+                ? null
+                : BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        AppColors.deepElectricBlue,
+                        AppColors.vibrantPurple,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.deepElectricBlue.withOpacity(0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
             child: FilledButton.icon(
               onPressed: current == null
                   ? null
@@ -231,10 +311,20 @@ class _ExerciseCard extends ConsumerWidget {
                         await context.push('/session/${session.id}');
                       }
                     },
-              icon: const Icon(Icons.play_arrow),
-              label: const Text('Start Workout'),
+              icon: const Icon(Icons.play_arrow, color: Colors.white),
+              label: const Text(
+                'Start Workout',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  letterSpacing: 0.5,
+                ),
+              ),
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                backgroundColor: current == null ? null : Colors.transparent,
+                shadowColor: Colors.transparent,
               ),
             ),
           ),
@@ -254,62 +344,92 @@ class _CurrentLevelInfo extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.brightness == Brightness.dark
-            ? AppColors.carbonGray
-            : AppColors.softGray,
-        borderRadius: BorderRadius.circular(12),
+        color: theme.brightness == Brightness.dark ? AppColors.carbonGray : AppColors.softGray,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withOpacity(0.08),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Rep Scheme',
+            'REP SCHEME',
             style: theme.textTheme.labelSmall?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.6),
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
-            level.repsPerSet.join(' - '),
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w700,
+            level.repsPerSet.join('  ·  '),
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.w800,
               fontFeatures: const [
                 FontFeature.tabularFigures(),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Row(
             children: [
-              Icon(
-                Icons.fitness_center,
-                size: 16,
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                '${level.repsPerSet.length} sets',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
-                  fontWeight: FontWeight.w500,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.smokeGray.withOpacity(0.5)
+                      : Colors.white.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.fitness_center,
+                      size: 16,
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${level.repsPerSet.length} sets',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.8),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 16),
-              Icon(
-                Icons.timer_outlined,
-                size: 16,
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                '${level.restSeconds}s rest',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
-                  fontWeight: FontWeight.w500,
+              const SizedBox(width: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.smokeGray.withOpacity(0.5)
+                      : Colors.white.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.timer_outlined,
+                      size: 16,
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${level.restSeconds}s rest',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.8),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

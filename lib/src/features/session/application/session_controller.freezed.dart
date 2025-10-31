@@ -97,9 +97,6 @@ class _$SessionStateCopyWithImpl<$Res, $Val extends SessionState>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
-
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -115,9 +112,6 @@ class __$$IdleImplCopyWithImpl<$Res>
     implements _$$IdleImplCopyWith<$Res> {
   __$$IdleImplCopyWithImpl(_$IdleImpl _value, $Res Function(_$IdleImpl) _then)
       : super(_value, _then);
-
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -250,8 +244,6 @@ class __$$InProgressImplCopyWithImpl<$Res>
       _$InProgressImpl _value, $Res Function(_$InProgressImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -270,8 +262,6 @@ class __$$InProgressImplCopyWithImpl<$Res>
     ));
   }
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $WorkoutSessionCopyWith<$Res> get session {
@@ -310,9 +300,7 @@ class _$InProgressImpl implements _InProgress {
   @override
   int get hashCode => Object.hash(runtimeType, session, currentSetIndex);
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$InProgressImplCopyWith<_$InProgressImpl> get copyWith =>
@@ -413,10 +401,7 @@ abstract class _InProgress implements SessionState {
 
   WorkoutSession get session;
   int get currentSetIndex;
-
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$InProgressImplCopyWith<_$InProgressImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -444,8 +429,6 @@ class __$$RestingImplCopyWithImpl<$Res>
       _$RestingImpl _value, $Res Function(_$RestingImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -474,8 +457,6 @@ class __$$RestingImplCopyWithImpl<$Res>
     ));
   }
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $WorkoutSessionCopyWith<$Res> get session {
@@ -526,9 +507,7 @@ class _$RestingImpl implements _Resting {
   int get hashCode => Object.hash(
       runtimeType, session, nextSetIndex, restEndsAt, remainingSeconds);
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$RestingImplCopyWith<_$RestingImpl> get copyWith =>
@@ -633,10 +612,7 @@ abstract class _Resting implements SessionState {
   int get nextSetIndex;
   DateTime get restEndsAt;
   int get remainingSeconds;
-
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$RestingImplCopyWith<_$RestingImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -660,8 +636,6 @@ class __$$CompletedImplCopyWithImpl<$Res>
       _$CompletedImpl _value, $Res Function(_$CompletedImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -675,8 +649,6 @@ class __$$CompletedImplCopyWithImpl<$Res>
     ));
   }
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $WorkoutSessionCopyWith<$Res> get session {
@@ -710,9 +682,7 @@ class _$CompletedImpl implements _Completed {
   @override
   int get hashCode => Object.hash(runtimeType, session);
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$CompletedImplCopyWith<_$CompletedImpl> get copyWith =>
@@ -811,10 +781,7 @@ abstract class _Completed implements SessionState {
       _$CompletedImpl;
 
   WorkoutSession get session;
-
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$CompletedImplCopyWith<_$CompletedImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -838,8 +805,6 @@ class __$$FailureImplCopyWithImpl<$Res>
       _$FailureImpl _value, $Res Function(_$FailureImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -853,8 +818,6 @@ class __$$FailureImplCopyWithImpl<$Res>
     ));
   }
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $FailureCopyWith<$Res> get failure {
@@ -888,9 +851,7 @@ class _$FailureImpl implements _Failure {
   @override
   int get hashCode => Object.hash(runtimeType, failure);
 
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$FailureImplCopyWith<_$FailureImpl> get copyWith =>
@@ -988,10 +949,7 @@ abstract class _Failure implements SessionState {
   const factory _Failure({required final Failure failure}) = _$FailureImpl;
 
   Failure get failure;
-
-  /// Create a copy of SessionState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$FailureImplCopyWith<_$FailureImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

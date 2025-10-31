@@ -10,6 +10,7 @@ import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/session.dart';
 import 'package:workouttracker/src/core/domain/entities/timer.dart';
 import 'package:workouttracker/src/core/domain/failures.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 part 'session_controller.freezed.dart';
 
@@ -39,8 +40,15 @@ class SessionController extends StateNotifier<SessionState> {
 
   final Ref _ref;
   Timer? _ticker;
+  final Set<int> _playedBeeps = {};
 
   DateTime _now() => _ref.read(clockProvider).call();
+
+  bool _keepAwakeSetting() {
+    final timerSettingsAsync = _ref.read(timerSettingsProvider);
+    final timerSettings = timerSettingsAsync.value ?? const TimerSettings();
+    return timerSettings.keepAwakeDuringRest;
+  }
 
   Future<void> start(Exercise exercise, {int? levelIndex}) async {
     disposeTicker();
@@ -53,8 +61,7 @@ class SessionController extends StateNotifier<SessionState> {
       exercise.levels.length - 1,
     );
     final usecase = _ref.read(startSessionUseCaseProvider);
-    final result =
-        await usecase(exercise: exercise, overrideLevelIndex: intendedIndex);
+    final result = await usecase(exercise: exercise, overrideLevelIndex: intendedIndex);
     result.match(
       _emitFailure,
       (session) async {
@@ -70,8 +77,7 @@ class SessionController extends StateNotifier<SessionState> {
       final session = currentState.session;
       final setIndex = currentState.currentSetIndex;
       final record = _ref.read(recordSetAttemptUseCaseProvider);
-      final result =
-          await record(sessionId: session.id, setIndex: setIndex, reps: reps);
+      final result = await record(sessionId: session.id, setIndex: setIndex, reps: reps);
       await result.match(
         (failure) async => _emitFailure(failure),
         (updated) async {
@@ -90,9 +96,9 @@ class SessionController extends StateNotifier<SessionState> {
     final currentState = state;
     if (currentState is _Resting) {
       disposeTicker();
-      await _ref
-          .read(notificationServiceProvider)
-          .cancelRestEnd(currentState.session.id);
+      await _ref.read(notificationServiceProvider).cancelRestEnd(currentState.session.id);
+      // Leaving rest; release wakelock if held.
+      unawaited(WakelockPlus.disable());
       state = SessionState.inProgress(
         session: currentState.session,
         currentSetIndex: currentState.nextSetIndex,
@@ -103,8 +109,7 @@ class SessionController extends StateNotifier<SessionState> {
   Future<void> adjustRest(int deltaSeconds) async {
     final currentState = state;
     if (currentState is _Resting) {
-      final restEndsAt =
-          currentState.restEndsAt.add(Duration(seconds: deltaSeconds));
+      final restEndsAt = currentState.restEndsAt.add(Duration(seconds: deltaSeconds));
       final now = _now();
       var adjustedEnd = restEndsAt.isBefore(now) ? now : restEndsAt;
       final maxEnd = now.add(const Duration(hours: 1));
@@ -155,6 +160,7 @@ class SessionController extends StateNotifier<SessionState> {
 
   Future<void> _startRest(WorkoutSession session, int nextSetIndex) async {
     disposeTicker();
+    _playedBeeps.clear(); // Reset beeps tracker for new rest period
     final duration = Duration(seconds: _defaultRest(session));
     final restEndsAt = _now().add(duration);
     state = SessionState.resting(
@@ -167,10 +173,19 @@ class SessionController extends StateNotifier<SessionState> {
           restEndsAt,
           sessionId: session.id,
         );
+    // Apply wakelock preference: keep screen awake only during rest.
+    try {
+      if (_keepAwakeSetting()) {
+        await WakelockPlus.enable();
+      } else {
+        await WakelockPlus.disable();
+      }
+    } catch (_) {
+      // Ignore platform-specific errors (e.g., unsupported platforms)
+    }
     // Tick more frequently than once per second to avoid visible drift on
     // some devices/builds, but only emit when the whole second changes.
-    _ticker =
-        Timer.periodic(const Duration(milliseconds: 250), (_) => _onRestTick());
+    _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) => _onRestTick());
   }
 
   void _onRestTick() {
@@ -178,6 +193,9 @@ class SessionController extends StateNotifier<SessionState> {
     if (currentState is _Resting) {
       final remaining = _remainingSeconds(currentState.restEndsAt);
       if (remaining <= 0) {
+        // Stop the ticker synchronously before scheduling completion to
+        // avoid multiple overlapping completion calls from subsequent ticks.
+        disposeTicker();
         unawaited(
           _completeRest(currentState.session, currentState.nextSetIndex),
         );
@@ -190,9 +208,37 @@ class SessionController extends StateNotifier<SessionState> {
           restEndsAt: currentState.restEndsAt,
           remainingSeconds: remaining,
         );
+        // Play countdown beeps based on settings
+        _playCountdownBeepIfNeeded(remaining);
       }
     } else {
       disposeTicker();
+    }
+  }
+
+  void _playCountdownBeepIfNeeded(int remainingSeconds) {
+    final timerSettingsAsync = _ref.read(timerSettingsProvider);
+    final timerSettings = timerSettingsAsync.value ?? const TimerSettings();
+    final beepsMode = timerSettings.beeps;
+
+    // Don't play if beeps are off or if we've already played for this second
+    if (beepsMode == CountdownBeeps.off || _playedBeeps.contains(remainingSeconds)) {
+      return;
+    }
+
+    bool shouldBeep = false;
+    switch (beepsMode) {
+      case CountdownBeeps.last3:
+        shouldBeep = remainingSeconds > 0 && remainingSeconds <= 3;
+      case CountdownBeeps.last10:
+        shouldBeep = remainingSeconds > 0 && remainingSeconds <= 10;
+      case CountdownBeeps.off:
+        shouldBeep = false;
+    }
+
+    if (shouldBeep) {
+      _playedBeeps.add(remainingSeconds);
+      unawaited(_ref.read(beepServiceProvider).playCountdownTick());
     }
   }
 
@@ -200,6 +246,8 @@ class SessionController extends StateNotifier<SessionState> {
     disposeTicker();
     await _ref.read(notificationServiceProvider).cancelRestEnd(session.id);
     await _ref.read(beepServiceProvider).playRestEndCue();
+    // Rest finished; release wakelock if held.
+    unawaited(WakelockPlus.disable());
     state = SessionState.inProgress(
       session: session,
       currentSetIndex: nextSetIndex,
@@ -209,19 +257,21 @@ class SessionController extends StateNotifier<SessionState> {
   Future<void> _evaluateAndComplete(WorkoutSession session) async {
     disposeTicker();
     await _ref.read(notificationServiceProvider).cancelRestEnd(session.id);
+    // Session completed; ensure wakelock is released.
+    unawaited(WakelockPlus.disable());
     final eval = _ref.read(evaluateLevelPassUseCaseProvider);
     final passed = eval(
       targetRepsPerSet: session.targetRepsPerSet,
       attempts: session.attempts,
     );
     final endSession = _ref.read(endSessionUseCaseProvider);
-    final result =
-        await endSession(sessionId: session.id, passed: passed);
+    final result = await endSession(sessionId: session.id, passed: passed);
     result.match(
       _emitFailure,
       (completed) => state = SessionState.completed(session: completed),
     );
   }
+
 
   int _remainingSeconds(DateTime restEndsAt) {
     final diff = restEndsAt.difference(_now()).inSeconds;
@@ -230,11 +280,19 @@ class SessionController extends StateNotifier<SessionState> {
 
   void _emitFailure(Failure failure) {
     disposeTicker();
+    // On failure, be conservative and release wakelock.
+    unawaited(WakelockPlus.disable());
     state = SessionState.failure(failure: failure);
+  }
+
+  @override
+  void dispose() {
+    // Safety: always release wakelock on controller disposal.
+    unawaited(WakelockPlus.disable());
+    super.dispose();
   }
 }
 
-final sessionControllerProvider =
-    StateNotifierProvider<SessionController, SessionState>(
+final sessionControllerProvider = StateNotifierProvider<SessionController, SessionState>(
   SessionController.new,
 );

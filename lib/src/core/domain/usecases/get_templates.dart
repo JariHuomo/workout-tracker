@@ -12,4 +12,3 @@ class GetTemplates {
     return _repository.getTemplates();
   }
 }
-

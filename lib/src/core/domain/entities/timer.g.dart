@@ -10,6 +10,7 @@ _$TimerSettingsImpl _$$TimerSettingsImplFromJson(Map<String, dynamic> json) =>
     _$TimerSettingsImpl(
       defaultRestSeconds: (json['defaultRestSeconds'] as num?)?.toInt() ?? 90,
       preciseAlarms: json['preciseAlarms'] as bool? ?? false,
+      keepAwakeDuringRest: json['keepAwakeDuringRest'] as bool? ?? false,
       beeps: $enumDecodeNullable(_$CountdownBeepsEnumMap, json['beeps']) ??
           CountdownBeeps.last3,
     );
@@ -18,6 +19,7 @@ Map<String, dynamic> _$$TimerSettingsImplToJson(_$TimerSettingsImpl instance) =>
     <String, dynamic>{
       'defaultRestSeconds': instance.defaultRestSeconds,
       'preciseAlarms': instance.preciseAlarms,
+      'keepAwakeDuringRest': instance.keepAwakeDuringRest,
       'beeps': _$CountdownBeepsEnumMap[instance.beeps]!,
     };
 

@@ -1,5 +1,6 @@
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart' as flutter_test;
 import 'package:fpdart/fpdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
@@ -17,6 +18,7 @@ void main() {
   const restSeconds = 30;
 
   test('rest timer transitions back to in-progress after countdown', () {
+    flutter_test.TestWidgetsFlutterBinding.ensureInitialized();
     fakeAsync((async) {
       final clock = async.getClock(DateTime(2025, 1, 1, 12));
       final prefs = _FakePrefsRepository(restSeconds: restSeconds);
@@ -70,8 +72,7 @@ void main() {
               DateTime endsAt,
               int remaining,
             )?>(
-          resting: (session, next, endsAt, remaining) =>
-              (session, next, endsAt, remaining),
+          resting: (session, next, endsAt, remaining) => (session, next, endsAt, remaining),
           orElse: () => null,
         );
         expect(restState, isNotNull);
@@ -119,8 +120,7 @@ class _FakePrefsRepository implements PrefsRepository {
   TimerSettings _settings() => TimerSettings(defaultRestSeconds: restSeconds);
 
   @override
-  Future<Either<Failure, TimerSettings>> loadTimerSettings() async =>
-      right(_settings());
+  Future<Either<Failure, TimerSettings>> loadTimerSettings() async => right(_settings());
 
   @override
   Future<Either<Failure, Unit>> saveTimerSettings(
@@ -161,11 +161,17 @@ class _FakeNotificationService extends NotificationService {
   }
 }
 
-class _FakeBeepService extends BeepService {
+class _FakeBeepService implements BeepService {
   int playCount = 0;
+
+  @override
+  Future<void> playCountdownTick() async {}
 
   @override
   Future<void> playRestEndCue() async {
     playCount++;
   }
+
+  @override
+  void dispose() {}
 }

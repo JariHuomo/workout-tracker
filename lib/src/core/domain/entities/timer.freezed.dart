@@ -21,15 +21,13 @@ TimerSettings _$TimerSettingsFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$TimerSettings {
   int get defaultRestSeconds => throw _privateConstructorUsedError;
-  bool get preciseAlarms => throw _privateConstructorUsedError;
+  bool get preciseAlarms =>
+      throw _privateConstructorUsedError; // When enabled, keeps the device screen awake during rest periods.
+  bool get keepAwakeDuringRest => throw _privateConstructorUsedError;
   CountdownBeeps get beeps => throw _privateConstructorUsedError;
 
-  /// Serializes this TimerSettings to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of TimerSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $TimerSettingsCopyWith<TimerSettings> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -40,7 +38,11 @@ abstract class $TimerSettingsCopyWith<$Res> {
           TimerSettings value, $Res Function(TimerSettings) then) =
       _$TimerSettingsCopyWithImpl<$Res, TimerSettings>;
   @useResult
-  $Res call({int defaultRestSeconds, bool preciseAlarms, CountdownBeeps beeps});
+  $Res call(
+      {int defaultRestSeconds,
+      bool preciseAlarms,
+      bool keepAwakeDuringRest,
+      CountdownBeeps beeps});
 }
 
 /// @nodoc
@@ -53,13 +55,12 @@ class _$TimerSettingsCopyWithImpl<$Res, $Val extends TimerSettings>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of TimerSettings
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? defaultRestSeconds = null,
     Object? preciseAlarms = null,
+    Object? keepAwakeDuringRest = null,
     Object? beeps = null,
   }) {
     return _then(_value.copyWith(
@@ -70,6 +71,10 @@ class _$TimerSettingsCopyWithImpl<$Res, $Val extends TimerSettings>
       preciseAlarms: null == preciseAlarms
           ? _value.preciseAlarms
           : preciseAlarms // ignore: cast_nullable_to_non_nullable
+              as bool,
+      keepAwakeDuringRest: null == keepAwakeDuringRest
+          ? _value.keepAwakeDuringRest
+          : keepAwakeDuringRest // ignore: cast_nullable_to_non_nullable
               as bool,
       beeps: null == beeps
           ? _value.beeps
@@ -87,7 +92,11 @@ abstract class _$$TimerSettingsImplCopyWith<$Res>
       __$$TimerSettingsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int defaultRestSeconds, bool preciseAlarms, CountdownBeeps beeps});
+  $Res call(
+      {int defaultRestSeconds,
+      bool preciseAlarms,
+      bool keepAwakeDuringRest,
+      CountdownBeeps beeps});
 }
 
 /// @nodoc
@@ -98,13 +107,12 @@ class __$$TimerSettingsImplCopyWithImpl<$Res>
       _$TimerSettingsImpl _value, $Res Function(_$TimerSettingsImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of TimerSettings
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? defaultRestSeconds = null,
     Object? preciseAlarms = null,
+    Object? keepAwakeDuringRest = null,
     Object? beeps = null,
   }) {
     return _then(_$TimerSettingsImpl(
@@ -115,6 +123,10 @@ class __$$TimerSettingsImplCopyWithImpl<$Res>
       preciseAlarms: null == preciseAlarms
           ? _value.preciseAlarms
           : preciseAlarms // ignore: cast_nullable_to_non_nullable
+              as bool,
+      keepAwakeDuringRest: null == keepAwakeDuringRest
+          ? _value.keepAwakeDuringRest
+          : keepAwakeDuringRest // ignore: cast_nullable_to_non_nullable
               as bool,
       beeps: null == beeps
           ? _value.beeps
@@ -130,6 +142,7 @@ class _$TimerSettingsImpl implements _TimerSettings {
   const _$TimerSettingsImpl(
       {this.defaultRestSeconds = 90,
       this.preciseAlarms = false,
+      this.keepAwakeDuringRest = false,
       this.beeps = CountdownBeeps.last3});
 
   factory _$TimerSettingsImpl.fromJson(Map<String, dynamic> json) =>
@@ -141,13 +154,17 @@ class _$TimerSettingsImpl implements _TimerSettings {
   @override
   @JsonKey()
   final bool preciseAlarms;
+// When enabled, keeps the device screen awake during rest periods.
+  @override
+  @JsonKey()
+  final bool keepAwakeDuringRest;
   @override
   @JsonKey()
   final CountdownBeeps beeps;
 
   @override
   String toString() {
-    return 'TimerSettings(defaultRestSeconds: $defaultRestSeconds, preciseAlarms: $preciseAlarms, beeps: $beeps)';
+    return 'TimerSettings(defaultRestSeconds: $defaultRestSeconds, preciseAlarms: $preciseAlarms, keepAwakeDuringRest: $keepAwakeDuringRest, beeps: $beeps)';
   }
 
   @override
@@ -159,17 +176,17 @@ class _$TimerSettingsImpl implements _TimerSettings {
                 other.defaultRestSeconds == defaultRestSeconds) &&
             (identical(other.preciseAlarms, preciseAlarms) ||
                 other.preciseAlarms == preciseAlarms) &&
+            (identical(other.keepAwakeDuringRest, keepAwakeDuringRest) ||
+                other.keepAwakeDuringRest == keepAwakeDuringRest) &&
             (identical(other.beeps, beeps) || other.beeps == beeps));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, defaultRestSeconds, preciseAlarms, beeps);
+  int get hashCode => Object.hash(runtimeType, defaultRestSeconds,
+      preciseAlarms, keepAwakeDuringRest, beeps);
 
-  /// Create a copy of TimerSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$TimerSettingsImplCopyWith<_$TimerSettingsImpl> get copyWith =>
@@ -187,6 +204,7 @@ abstract class _TimerSettings implements TimerSettings {
   const factory _TimerSettings(
       {final int defaultRestSeconds,
       final bool preciseAlarms,
+      final bool keepAwakeDuringRest,
       final CountdownBeeps beeps}) = _$TimerSettingsImpl;
 
   factory _TimerSettings.fromJson(Map<String, dynamic> json) =
@@ -196,13 +214,12 @@ abstract class _TimerSettings implements TimerSettings {
   int get defaultRestSeconds;
   @override
   bool get preciseAlarms;
+  @override // When enabled, keeps the device screen awake during rest periods.
+  bool get keepAwakeDuringRest;
   @override
   CountdownBeeps get beeps;
-
-  /// Create a copy of TimerSettings
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$TimerSettingsImplCopyWith<_$TimerSettingsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

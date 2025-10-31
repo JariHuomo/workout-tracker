@@ -28,12 +28,8 @@ mixin _$Exercise {
   int get currentLevelIndex => throw _privateConstructorUsedError;
   String get notes => throw _privateConstructorUsedError;
 
-  /// Serializes this Exercise to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Exercise
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $ExerciseCopyWith<Exercise> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -63,8 +59,6 @@ class _$ExerciseCopyWithImpl<$Res, $Val extends Exercise>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Exercise
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -135,8 +129,6 @@ class __$$ExerciseImplCopyWithImpl<$Res>
       _$ExerciseImpl _value, $Res Function(_$ExerciseImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Exercise
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -244,14 +236,12 @@ class _$ExerciseImpl implements _Exercise {
             (identical(other.notes, notes) || other.notes == notes));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, name, category, templateId,
       const DeepCollectionEquality().hash(_levels), currentLevelIndex, notes);
 
-  /// Create a copy of Exercise
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$ExerciseImplCopyWith<_$ExerciseImpl> get copyWith =>
@@ -292,11 +282,8 @@ abstract class _Exercise implements Exercise {
   int get currentLevelIndex;
   @override
   String get notes;
-
-  /// Create a copy of Exercise
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$ExerciseImplCopyWith<_$ExerciseImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -312,12 +299,8 @@ mixin _$Level {
   int get restSeconds => throw _privateConstructorUsedError;
   bool get isDeload => throw _privateConstructorUsedError;
 
-  /// Serializes this Level to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Level
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $LevelCopyWith<Level> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -339,8 +322,6 @@ class _$LevelCopyWithImpl<$Res, $Val extends Level>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Level
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -388,8 +369,6 @@ class __$$LevelImplCopyWithImpl<$Res>
       _$LevelImpl _value, $Res Function(_$LevelImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Level
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -468,14 +447,12 @@ class _$LevelImpl implements _Level {
                 other.isDeload == isDeload));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, index,
       const DeepCollectionEquality().hash(_repsPerSet), restSeconds, isDeload);
 
-  /// Create a copy of Level
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$LevelImplCopyWith<_$LevelImpl> get copyWith =>
@@ -506,11 +483,8 @@ abstract class _Level implements Level {
   int get restSeconds;
   @override
   bool get isDeload;
-
-  /// Create a copy of Level
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$LevelImplCopyWith<_$LevelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

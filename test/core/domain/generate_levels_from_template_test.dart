@@ -1,5 +1,4 @@
 import 'package:test/test.dart';
-import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/template.dart';
 import 'package:workouttracker/src/core/domain/usecases/generate_levels_from_template.dart';
 
@@ -26,8 +25,7 @@ void main() {
   test('GenerateLevelsFromTemplate sorts by week and maps values', () {
     final template = buildTemplate();
 
-    final levels =
-        generateLevels(template: template, restSeconds: 120);
+    final levels = generateLevels(template: template, restSeconds: 120);
 
     expect(levels, hasLength(2));
     expect(levels.first.index, 1);
@@ -48,4 +46,3 @@ void main() {
     }
   });
 }
-

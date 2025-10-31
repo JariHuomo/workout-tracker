@@ -123,9 +123,7 @@ class _ExerciseDetails extends ConsumerWidget {
                 children: [
                   TextButton(
                     onPressed: () async {
-                      await ref
-                          .read(exercisesProvider.notifier)
-                          .setCurrentLevel(ex.id, i);
+                      await ref.read(exercisesProvider.notifier).setCurrentLevel(ex.id, i);
                     },
                     child: const Text('Set start'),
                   ),
@@ -135,9 +133,7 @@ class _ExerciseDetails extends ConsumerWidget {
             }
             return ListTile(
               leading: Icon(
-                i == currentIdx
-                    ? Icons.radio_button_checked
-                    : Icons.radio_button_unchecked,
+                i == currentIdx ? Icons.radio_button_checked : Icons.radio_button_unchecked,
               ),
               title: Text(
                 [

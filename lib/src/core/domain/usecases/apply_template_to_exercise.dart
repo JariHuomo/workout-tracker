@@ -23,15 +23,12 @@ class ApplyTemplateToExercise {
       template: template,
       restSeconds: restSeconds,
     );
-    final firstNonDeloadIndex =
-        levels.indexWhere((level) => level.isDeload == false);
+    final firstNonDeloadIndex = levels.indexWhere((level) => level.isDeload == false);
     final updatedExercise = exercise.copyWith(
       templateId: template.id,
       levels: levels,
-      currentLevelIndex:
-          firstNonDeloadIndex == -1 ? 0 : firstNonDeloadIndex,
+      currentLevelIndex: firstNonDeloadIndex == -1 ? 0 : firstNonDeloadIndex,
     );
     return _repository.upsertExercise(updatedExercise);
   }
 }
-

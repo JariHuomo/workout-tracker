@@ -15,4 +15,3 @@ class EndSession {
     return _repository.endSession(sessionId: sessionId, passed: passed);
   }
 }
-

@@ -5,4 +5,3 @@ import 'package:workouttracker/src/core/domain/failures.dart';
 abstract class TemplateRepository {
   Future<Either<Failure, List<ProgressionTemplate>>> getTemplates();
 }
-

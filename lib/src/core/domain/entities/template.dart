@@ -29,8 +29,7 @@ class ProgressionTemplate {
       targetAudience: json['targetAudience'] as String? ?? '',
       estimatedWeeks: (json['estimatedWeeks'] as num?)?.toInt() ?? 0,
       deloadFrequency: (json['deloadFrequency'] as num?)?.toInt() ?? 0,
-      deloadPercentage:
-          (json['deloadPercentage'] as num?)?.toDouble() ?? 0.0,
+      deloadPercentage: (json['deloadPercentage'] as num?)?.toDouble() ?? 0.0,
       difficulty: json['difficulty'] as String? ?? '',
       weeks: (json['weeks'] as List<dynamic>? ?? [])
           .map((e) => WeekProtocol.fromJson(e as Map<String, dynamic>))
