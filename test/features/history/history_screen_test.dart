@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/session.dart';
+import 'package:workouttracker/src/features/exercises/application/exercises_notifier.dart';
 import 'package:workouttracker/src/features/history/application/history_sessions_provider.dart';
 import 'package:workouttracker/src/features/history/presentation/history_screen.dart';
 
@@ -31,10 +31,9 @@ void main() {
       passed: true,
     );
 
-    final exercise = Exercise(
+    const exercise = Exercise(
       id: 'ex1',
       name: 'Ring Rows',
-      levels: const [],
     );
 
     await tester.pumpWidget(
@@ -62,7 +61,7 @@ void main() {
 }
 
 class _FakeExercisesNotifier extends ExercisesNotifier {
-  _FakeExercisesNotifier(Ref ref, List<Exercise> exercises) : super(ref) {
+  _FakeExercisesNotifier(super.ref, List<Exercise> exercises) {
     state = AsyncValue.data(exercises);
   }
   @override

@@ -45,7 +45,8 @@ class _SettingsFormState extends ConsumerState<_SettingsForm> {
           children: [
             Expanded(
               child: TextField(
-                decoration: const InputDecoration(labelText: 'Default Rest (s)'),
+                decoration:
+                    const InputDecoration(labelText: 'Default Rest (s)'),
                 keyboardType: TextInputType.number,
                 controller: TextEditingController(text: rest.toString()),
                 onChanged: (v) => rest = int.tryParse(v) ?? rest,
@@ -64,11 +65,13 @@ class _SettingsFormState extends ConsumerState<_SettingsForm> {
           value: keepAwake,
           onChanged: (v) => setState(() => keepAwake = v),
           title: const Text('Keep screen awake during rest'),
-          subtitle: const Text('Prevents display sleep while the rest timer runs'),
+          subtitle:
+              const Text('Prevents display sleep while the rest timer runs'),
         ),
         const SizedBox(height: 12),
         DropdownButtonFormField<CountdownBeeps>(
-          value: beeps,
+          isExpanded: true,
+          initialValue: beeps,
           decoration: const InputDecoration(labelText: 'Countdown beeps'),
           items: CountdownBeeps.values
               .map((e) => DropdownMenuItem(value: e, child: Text(_label(e))))

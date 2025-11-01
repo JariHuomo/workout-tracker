@@ -23,7 +23,8 @@ class ApplyTemplateToExercise {
       template: template,
       restSeconds: restSeconds,
     );
-    final firstNonDeloadIndex = levels.indexWhere((level) => level.isDeload == false);
+    final firstNonDeloadIndex =
+        levels.indexWhere((level) => level.isDeload == false);
     final updatedExercise = exercise.copyWith(
       templateId: template.id,
       levels: levels,

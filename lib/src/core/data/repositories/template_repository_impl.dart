@@ -22,4 +22,9 @@ class TemplateRepositoryImpl implements TemplateRepository {
       return left(Failure.general('Load templates failed: $error'));
     }
   }
+
+  @override
+  void invalidateCache() {
+    _cache = null;
+  }
 }

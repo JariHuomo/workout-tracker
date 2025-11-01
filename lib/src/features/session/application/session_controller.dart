@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:workouttracker/src/core/application/beep_service.dart';
 import 'package:workouttracker/src/core/application/notification_service.dart';
 import 'package:workouttracker/src/core/application/providers.dart';
@@ -10,7 +10,6 @@ import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/session.dart';
 import 'package:workouttracker/src/core/domain/entities/timer.dart';
 import 'package:workouttracker/src/core/domain/failures.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 
 part 'session_controller.freezed.dart';
 
@@ -61,7 +60,8 @@ class SessionController extends StateNotifier<SessionState> {
       exercise.levels.length - 1,
     );
     final usecase = _ref.read(startSessionUseCaseProvider);
-    final result = await usecase(exercise: exercise, overrideLevelIndex: intendedIndex);
+    final result =
+        await usecase(exercise: exercise, overrideLevelIndex: intendedIndex);
     result.match(
       _emitFailure,
       (session) async {
@@ -77,7 +77,8 @@ class SessionController extends StateNotifier<SessionState> {
       final session = currentState.session;
       final setIndex = currentState.currentSetIndex;
       final record = _ref.read(recordSetAttemptUseCaseProvider);
-      final result = await record(sessionId: session.id, setIndex: setIndex, reps: reps);
+      final result =
+          await record(sessionId: session.id, setIndex: setIndex, reps: reps);
       await result.match(
         (failure) async => _emitFailure(failure),
         (updated) async {
@@ -96,7 +97,9 @@ class SessionController extends StateNotifier<SessionState> {
     final currentState = state;
     if (currentState is _Resting) {
       disposeTicker();
-      await _ref.read(notificationServiceProvider).cancelRestEnd(currentState.session.id);
+      await _ref
+          .read(notificationServiceProvider)
+          .cancelRestEnd(currentState.session.id);
       // Leaving rest; release wakelock if held.
       unawaited(WakelockPlus.disable());
       state = SessionState.inProgress(
@@ -109,7 +112,8 @@ class SessionController extends StateNotifier<SessionState> {
   Future<void> adjustRest(int deltaSeconds) async {
     final currentState = state;
     if (currentState is _Resting) {
-      final restEndsAt = currentState.restEndsAt.add(Duration(seconds: deltaSeconds));
+      final restEndsAt =
+          currentState.restEndsAt.add(Duration(seconds: deltaSeconds));
       final now = _now();
       var adjustedEnd = restEndsAt.isBefore(now) ? now : restEndsAt;
       final maxEnd = now.add(const Duration(hours: 1));
@@ -185,7 +189,8 @@ class SessionController extends StateNotifier<SessionState> {
     }
     // Tick more frequently than once per second to avoid visible drift on
     // some devices/builds, but only emit when the whole second changes.
-    _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) => _onRestTick());
+    _ticker =
+        Timer.periodic(const Duration(milliseconds: 250), (_) => _onRestTick());
   }
 
   void _onRestTick() {
@@ -222,11 +227,12 @@ class SessionController extends StateNotifier<SessionState> {
     final beepsMode = timerSettings.beeps;
 
     // Don't play if beeps are off or if we've already played for this second
-    if (beepsMode == CountdownBeeps.off || _playedBeeps.contains(remainingSeconds)) {
+    if (beepsMode == CountdownBeeps.off ||
+        _playedBeeps.contains(remainingSeconds)) {
       return;
     }
 
-    bool shouldBeep = false;
+    var shouldBeep = false;
     switch (beepsMode) {
       case CountdownBeeps.last3:
         shouldBeep = remainingSeconds > 0 && remainingSeconds <= 3;
@@ -272,7 +278,6 @@ class SessionController extends StateNotifier<SessionState> {
     );
   }
 
-
   int _remainingSeconds(DateTime restEndsAt) {
     final diff = restEndsAt.difference(_now()).inSeconds;
     return diff < 0 ? 0 : diff;
@@ -293,6 +298,7 @@ class SessionController extends StateNotifier<SessionState> {
   }
 }
 
-final sessionControllerProvider = StateNotifierProvider<SessionController, SessionState>(
+final sessionControllerProvider =
+    StateNotifierProvider<SessionController, SessionState>(
   SessionController.new,
 );

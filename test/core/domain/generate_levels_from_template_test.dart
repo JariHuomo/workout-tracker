@@ -3,7 +3,7 @@ import 'package:workouttracker/src/core/domain/entities/template.dart';
 import 'package:workouttracker/src/core/domain/usecases/generate_levels_from_template.dart';
 
 void main() {
-  final generateLevels = GenerateLevelsFromTemplate();
+  const generateLevels = GenerateLevelsFromTemplate();
 
   ProgressionTemplate buildTemplate() {
     return ProgressionTemplate(
@@ -16,7 +16,7 @@ void main() {
       deloadPercentage: 0.25,
       difficulty: 'easy',
       weeks: const [
-        WeekProtocol(week: 2, sets: 5, reps: 3, isDeload: false),
+        WeekProtocol(week: 2, sets: 5, reps: 3),
         WeekProtocol(week: 1, sets: 4, reps: 2, isDeload: true),
       ],
     );

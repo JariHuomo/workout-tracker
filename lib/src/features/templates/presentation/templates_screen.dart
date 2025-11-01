@@ -18,7 +18,8 @@ class TemplatesScreen extends ConsumerWidget {
         data: (templates) => _TemplatesList(templates: templates),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) {
-          final message = error is Failure ? error.message : 'Failed to load templates';
+          final message =
+              error is Failure ? error.message : 'Failed to load templates';
           return _TemplatesError(
             message: message,
             onRetry: () => ref.invalidate(templatesProvider),
@@ -81,14 +82,16 @@ class _TemplateCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: difficultyColor.withOpacity(0.12),
+                    color: difficultyColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     template.difficulty.toUpperCase(),
-                    style: theme.textTheme.labelMedium?.copyWith(color: difficultyColor),
+                    style: theme.textTheme.labelMedium
+                        ?.copyWith(color: difficultyColor),
                   ),
                 ),
               ],

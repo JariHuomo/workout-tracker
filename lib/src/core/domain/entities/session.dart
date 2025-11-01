@@ -11,7 +11,8 @@ class SetAttempt with _$SetAttempt {
     required DateTime timestamp,
   }) = _SetAttempt;
 
-  factory SetAttempt.fromJson(Map<String, dynamic> json) => _$SetAttemptFromJson(json);
+  factory SetAttempt.fromJson(Map<String, dynamic> json) =>
+      _$SetAttemptFromJson(json);
 }
 
 @freezed
@@ -27,5 +28,6 @@ class WorkoutSession with _$WorkoutSession {
     @Default(false) bool passed,
   }) = _WorkoutSession;
 
-  factory WorkoutSession.fromJson(Map<String, dynamic> json) => _$WorkoutSessionFromJson(json);
+  factory WorkoutSession.fromJson(Map<String, dynamic> json) =>
+      _$WorkoutSessionFromJson(json);
 }

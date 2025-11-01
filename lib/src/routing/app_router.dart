@@ -23,13 +23,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: ':id',
-            builder: (context, state) => ExerciseDetailsScreen(id: state.pathParameters['id']!),
+            builder: (context, state) =>
+                ExerciseDetailsScreen(id: state.pathParameters['id']!),
           ),
         ],
       ),
       GoRoute(
         path: '/session/:sessionId',
-        builder: (context, state) => SessionScreen(sessionId: state.pathParameters['sessionId']!),
+        builder: (context, state) =>
+            SessionScreen(sessionId: state.pathParameters['sessionId']!),
       ),
       GoRoute(
         path: '/settings',

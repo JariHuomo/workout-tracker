@@ -105,7 +105,7 @@ class SessionRepositoryImpl implements SessionRepository {
       final store = await _loadStore();
       final sessions = store.values.toList()
         ..sort((a, b) => (b.startedAt ?? DateTime.fromMillisecondsSinceEpoch(0))
-            .compareTo(a.startedAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
+            .compareTo(a.startedAt ?? DateTime.fromMillisecondsSinceEpoch(0)),);
       return right(sessions);
     } catch (e) {
       return left(Failure.general('Get sessions failed: $e'));

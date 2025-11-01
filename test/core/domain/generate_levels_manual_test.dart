@@ -11,7 +11,6 @@ void main() {
         endReps: 3,
         step: 1,
         restSeconds: 90,
-        mode: ManualGenerationMode.uniform,
       );
       expect(levels.length, 3);
       expect(levels[0].repsPerSet, List<int>.filled(5, 1));
@@ -28,7 +27,6 @@ void main() {
         endReps: 5,
         step: 1,
         restSeconds: 60,
-        mode: ManualGenerationMode.uniform,
         deloadEvery: 2,
         deloadPct: 0.5,
       );
@@ -82,14 +80,16 @@ void main() {
         deloadEvery: 3,
         deloadPct: 0.5,
       );
-      // Work levels: 1-1, 2-1, 2-2, 3-2, 3-3  => deload after 3rd and after 6th (not present)
+      // Work levels: 1-1, 2-1, 2-2, 3-2, 3-3
+      // => deload after 3rd and after 6th (not present)
       // So there should be a deload inserted after the third work level.
       final deloadIndices = <int>[];
       for (var i = 0; i < levels.length; i++) {
         if (levels[i].isDeload) deloadIndices.add(i);
       }
       expect(deloadIndices.length, 1);
-      // Deload row values should be reduced from the preceding work level (2-2 -> 1-1)
+      // Deload row values should be reduced from the preceding work level.
+      // (2-2 -> 1-1)
       final reduced = levels[deloadIndices.first].repsPerSet;
       expect(reduced, [1, 1]);
     });

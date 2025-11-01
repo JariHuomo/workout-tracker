@@ -4,6 +4,7 @@ import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/session.dart';
 import 'package:workouttracker/src/core/domain/failures.dart';
+import 'package:workouttracker/src/features/exercises/application/exercises_notifier.dart';
 import 'package:workouttracker/src/features/history/application/history_sessions_provider.dart';
 
 class HistoryScreen extends ConsumerWidget {
@@ -33,7 +34,8 @@ class HistoryScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(16),
                   itemBuilder: (context, index) {
                     final session = sessions[index];
-                    final exercise = exerciseMap[session.exerciseId]?.name ?? 'Unknown';
+                    final exercise =
+                        exerciseMap[session.exerciseId]?.name ?? 'Unknown';
                     return _HistoryTile(
                       session: session,
                       exerciseName: exercise,
@@ -45,7 +47,8 @@ class HistoryScreen extends ConsumerWidget {
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) {
-          final message = error is Failure ? error.message : 'Failed to load history';
+          final message =
+              error is Failure ? error.message : 'Failed to load history';
           return _ErrorState(
             message: message,
             onRetry: () => ref.invalidate(historySessionsProvider),
@@ -72,7 +75,10 @@ class _HistoryTile extends ConsumerWidget {
     final resultColor = session.passed
         ? Theme.of(context).colorScheme.primary
         : Theme.of(context).colorScheme.error;
-    final attemptSummary = session.attempts.map((attempt) => '${attempt.reps}').toList().join(', ');
+    final attemptSummary = session.attempts
+        .map((attempt) => '${attempt.reps}')
+        .toList()
+        .join(', ');
     final target = session.targetRepsPerSet.join(', ');
 
     return Card(
@@ -91,9 +97,10 @@ class _HistoryTile extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: resultColor.withOpacity(0.12),
+                    color: resultColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -112,7 +119,9 @@ class _HistoryTile extends ConsumerWidget {
             Text('Target: $target'),
             const SizedBox(height: 4),
             Text(
-              attemptSummary.isEmpty ? 'No sets logged' : 'Logged: $attemptSummary',
+              attemptSummary.isEmpty
+                  ? 'No sets logged'
+                  : 'Logged: $attemptSummary',
             ),
             _SessionRatingStars(sessionId: session.id),
           ],
@@ -124,10 +133,13 @@ class _HistoryTile extends ConsumerWidget {
   String _formatDateTime(DateTime? time) {
     if (time == null) return 'Unknown time';
     final local = time.toLocal();
-    final date =
-        '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')}';
-    final clock =
-        '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+    final year = local.year;
+    final month = local.month.toString().padLeft(2, '0');
+    final day = local.day.toString().padLeft(2, '0');
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    final date = '$year-$month-$day';
+    final clock = '$hour:$minute';
     return '$date $clock';
   }
 }

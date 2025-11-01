@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/session.dart';
+import 'package:workouttracker/src/features/exercises/application/exercise_search_provider.dart';
+import 'package:workouttracker/src/features/exercises/application/exercises_notifier.dart';
+import 'package:workouttracker/src/features/history/application/last_completed_provider.dart';
 import 'package:workouttracker/src/features/session/application/session_controller.dart';
 import 'package:workouttracker/src/theme/app_theme.dart';
 import 'package:workouttracker/src/theme/custom_widgets.dart';
@@ -18,9 +19,16 @@ class ExercisesScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      extendBodyBehindAppBar: false,
       appBar: AppBar(
         title: const Text('Exercises'),
+        bottom: const PreferredSize(
+          // Give enough space for TextField height + padding.
+          preferredSize: Size.fromHeight(72),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: _ExerciseSearchField(),
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.view_list_outlined),
@@ -57,19 +65,38 @@ class ExercisesScreen extends ConsumerWidget {
         label: const Text('New Exercise'),
       ),
       body: exercisesAsync.when(
-        data: (items) => items.isEmpty
-            ? EmptyStateWidget(
-                icon: Icons.fitness_center,
-                title: 'No Exercises Yet',
-                message: 'Create your first exercise to start your strength journey',
-                actionLabel: 'Create Exercise',
-                onAction: () => context.push('/exercises/new'),
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                itemBuilder: (c, i) => _ExerciseCard(ex: items[i]),
-                itemCount: items.length,
-              ),
+        data: (items) {
+          final query =
+              ref.watch(exerciseSearchQueryProvider).trim().toLowerCase();
+          final filtered = query.isEmpty
+              ? items
+              : items
+                  .where((e) => e.name.toLowerCase().contains(query))
+                  .toList();
+
+          if (items.isEmpty) {
+            return EmptyStateWidget(
+              icon: Icons.fitness_center,
+              title: 'No Exercises Yet',
+              message:
+                  'Create your first exercise to start your strength journey',
+              actionLabel: 'Create Exercise',
+              onAction: () => context.push('/exercises/new'),
+            );
+          }
+          if (filtered.isEmpty) {
+            return EmptyStateWidget(
+              icon: Icons.search_off,
+              title: 'No matches',
+              message: query.isEmpty ? '' : 'No exercises match "$query".',
+            );
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            itemBuilder: (c, i) => _ExerciseCard(ex: filtered[i]),
+            itemCount: filtered.length,
+          );
+        },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => EmptyStateWidget(
           icon: Icons.error_outline,
@@ -81,6 +108,57 @@ class ExercisesScreen extends ConsumerWidget {
   }
 }
 
+class _ExerciseSearchField extends ConsumerStatefulWidget {
+  const _ExerciseSearchField();
+
+  @override
+  ConsumerState<_ExerciseSearchField> createState() =>
+      _ExerciseSearchFieldState();
+}
+
+class _ExerciseSearchFieldState extends ConsumerState<_ExerciseSearchField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialValue = ref.read(exerciseSearchQueryProvider);
+    _controller = TextEditingController(text: initialValue);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = ref.watch(exerciseSearchQueryProvider);
+    return TextField(
+      controller: _controller,
+      decoration: InputDecoration(
+        hintText: 'Search exercises',
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: query.isEmpty
+            ? null
+            : IconButton(
+                tooltip: 'Clear',
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _controller.clear();
+                  ref.read(exerciseSearchQueryProvider.notifier).state = '';
+                },
+              ),
+        border: const OutlineInputBorder(),
+        isDense: true,
+      ),
+      onChanged: (value) =>
+          ref.read(exerciseSearchQueryProvider.notifier).state = value,
+    );
+  }
+}
+
 class _ExerciseCard extends ConsumerWidget {
   const _ExerciseCard({required this.ex});
   final Exercise ex;
@@ -88,11 +166,13 @@ class _ExerciseCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final current = (ex.levels.isEmpty || ex.currentLevelIndex >= ex.levels.length)
-        ? null
-        : ex.levels[ex.currentLevelIndex];
+    final current =
+        (ex.levels.isEmpty || ex.currentLevelIndex >= ex.levels.length)
+            ? null
+            : ex.levels[ex.currentLevelIndex];
 
-    final progress = ex.levels.isEmpty ? 0.0 : (ex.currentLevelIndex + 1) / ex.levels.length;
+    final progress =
+        ex.levels.isEmpty ? 0.0 : (ex.currentLevelIndex + 1) / ex.levels.length;
 
     return ElevatedInfoCard(
       onTap: () => context.push('/exercises/${ex.id}'),
@@ -102,7 +182,6 @@ class _ExerciseCard extends ConsumerWidget {
         children: [
           // Header with title and level badge
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               if (current != null) ...[
                 Container(
@@ -120,7 +199,8 @@ class _ExerciseCard extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.deepElectricBlue.withOpacity(0.3),
+                        color:
+                            AppColors.deepElectricBlue.withValues(alpha: 0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -153,9 +233,11 @@ class _ExerciseCard extends ConsumerWidget {
                     if (ex.levels.isNotEmpty) ...[
                       const SizedBox(height: 6),
                       Text(
-                        'Level ${ex.currentLevelIndex + 1} of ${ex.levels.length}',
+                        'Level ${ex.currentLevelIndex + 1} '
+                        'of ${ex.levels.length}',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.6),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -163,7 +245,77 @@ class _ExerciseCard extends ConsumerWidget {
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
+              PopupMenuButton<String>(
+                tooltip: 'More',
+                onSelected: (value) async {
+                  if (value == 'delete') {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Delete Exercise'),
+                        content: Text(
+                          'Delete "${ex.name}"? This cannot be undone.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed ?? false) {
+                      await ref.read(exercisesProvider.notifier).delete(ex.id);
+                    }
+                  }
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(value: 'delete', child: Text('Delete')),
+                ],
+              ),
             ],
+          ),
+
+          const SizedBox(height: 8),
+          Consumer(
+            builder: (context, ref, _) {
+              final lastAsync = ref.watch(lastCompletedByExerciseProvider);
+              return lastAsync.maybeWhen(
+                data: (map) {
+                  final last = map[ex.id];
+                  final style = theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  );
+                  if (last == null) {
+                    return Text('Last done: never', style: style);
+                  }
+                  final now = DateTime.now();
+                  final diff = now.difference(last);
+                  final days = diff.inDays;
+                  final label = days > 0
+                      ? '$days day${days == 1 ? '' : 's'} ago'
+                      : 'today';
+                  return Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        size: 16,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                      const SizedBox(width: 6),
+                      Text('Last done: $label', style: style),
+                    ],
+                  );
+                },
+                orElse: () => const SizedBox.shrink(),
+              );
+            },
           ),
 
           if (current == null) ...[
@@ -178,7 +330,7 @@ class _ExerciseCard extends ConsumerWidget {
                 children: [
                   Icon(
                     Icons.warning_amber_rounded,
-                    color: theme.colorScheme.error,
+                    color: theme.colorScheme.onErrorContainer,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
@@ -186,7 +338,7 @@ class _ExerciseCard extends ConsumerWidget {
                     child: Text(
                       'No levels defined',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.error,
+                        color: theme.colorScheme.onErrorContainer,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -214,7 +366,8 @@ class _ExerciseCard extends ConsumerWidget {
                     Text(
                       'OVERALL PROGRESS',
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.2,
                       ),
@@ -246,8 +399,6 @@ class _ExerciseCard extends ConsumerWidget {
                         height: 14,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
                             colors: [
                               AppColors.deepElectricBlue,
                               AppColors.vibrantPurple,
@@ -256,7 +407,8 @@ class _ExerciseCard extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.deepElectricBlue.withOpacity(0.4),
+                              color: AppColors.deepElectricBlue
+                                  .withValues(alpha: 0.4),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -278,8 +430,6 @@ class _ExerciseCard extends ConsumerWidget {
                 ? null
                 : BoxDecoration(
                     gradient: const LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
                       colors: [
                         AppColors.deepElectricBlue,
                         AppColors.vibrantPurple,
@@ -288,7 +438,8 @@ class _ExerciseCard extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.deepElectricBlue.withOpacity(0.4),
+                        color:
+                            AppColors.deepElectricBlue.withValues(alpha: 0.4),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -298,7 +449,9 @@ class _ExerciseCard extends ConsumerWidget {
               onPressed: current == null
                   ? null
                   : () async {
-                      await ref.read(sessionControllerProvider.notifier).start(ex);
+                      await ref
+                          .read(sessionControllerProvider.notifier)
+                          .start(ex);
                       final state = ref.read(sessionControllerProvider);
                       if (!context.mounted) {
                         return;
@@ -346,11 +499,12 @@ class _CurrentLevelInfo extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.brightness == Brightness.dark ? AppColors.carbonGray : AppColors.softGray,
+        color: theme.brightness == Brightness.dark
+            ? AppColors.carbonGray
+            : AppColors.softGray,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: theme.colorScheme.onSurface.withOpacity(0.08),
-          width: 1,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.08),
         ),
       ),
       child: Column(
@@ -359,7 +513,7 @@ class _CurrentLevelInfo extends StatelessWidget {
           Text(
             'REP SCHEME',
             style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
             ),
@@ -378,11 +532,12 @@ class _CurrentLevelInfo extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.smokeGray.withOpacity(0.5)
-                      : Colors.white.withOpacity(0.8),
+                      ? AppColors.smokeGray.withValues(alpha: 0.5)
+                      : Colors.white.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -391,13 +546,14 @@ class _CurrentLevelInfo extends StatelessWidget {
                     Icon(
                       Icons.fitness_center,
                       size: 16,
-                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     const SizedBox(width: 6),
                     Text(
                       '${level.repsPerSet.length} sets',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.8),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.8),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -406,11 +562,12 @@ class _CurrentLevelInfo extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.smokeGray.withOpacity(0.5)
-                      : Colors.white.withOpacity(0.8),
+                      ? AppColors.smokeGray.withValues(alpha: 0.5)
+                      : Colors.white.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -419,13 +576,14 @@ class _CurrentLevelInfo extends StatelessWidget {
                     Icon(
                       Icons.timer_outlined,
                       size: 16,
-                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     const SizedBox(width: 6),
                     Text(
                       '${level.restSeconds}s rest',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.8),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.8),
                         fontWeight: FontWeight.w600,
                       ),
                     ),

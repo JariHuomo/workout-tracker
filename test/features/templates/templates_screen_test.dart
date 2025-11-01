@@ -16,9 +16,9 @@ void main() {
     deloadPercentage: 0.33,
     difficulty: 'medium',
     weeks: const [
-      WeekProtocol(week: 1, sets: 5, reps: 1, isDeload: false),
-      WeekProtocol(week: 2, sets: 5, reps: 2, isDeload: false),
-      WeekProtocol(week: 3, sets: 5, reps: 3, isDeload: false),
+      WeekProtocol(week: 1, sets: 5, reps: 1),
+      WeekProtocol(week: 2, sets: 5, reps: 2),
+      WeekProtocol(week: 3, sets: 5, reps: 3),
       WeekProtocol(week: 4, sets: 5, reps: 2, isDeload: true),
     ],
   );

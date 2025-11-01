@@ -25,7 +25,8 @@ void main() {
   }
   ''';
 
-  test('TemplateRepositoryImpl parses templates from local data source', () async {
+  test('TemplateRepositoryImpl parses templates from local data source',
+      () async {
     final bundle = _FakeBundle(jsonString);
     final dataSource = TemplateLocalDataSource(bundle: bundle);
     final repository = TemplateRepositoryImpl(dataSource);

@@ -12,4 +12,3 @@ class GetSessionRating {
     return repo.getRating(sessionId);
   }
 }
-

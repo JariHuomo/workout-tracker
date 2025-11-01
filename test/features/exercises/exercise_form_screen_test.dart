@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/template.dart';
 import 'package:workouttracker/src/core/domain/failures.dart';
 import 'package:workouttracker/src/core/domain/repositories/exercise_repository.dart';
+import 'package:workouttracker/src/features/exercises/application/exercises_notifier.dart';
 import 'package:workouttracker/src/features/exercises/presentation/exercise_form_screen.dart';
 
 void main() {
@@ -20,14 +21,15 @@ void main() {
     deloadPercentage: 0.33,
     difficulty: 'medium',
     weeks: const [
-      WeekProtocol(week: 1, sets: 5, reps: 1, isDeload: false),
-      WeekProtocol(week: 2, sets: 5, reps: 2, isDeload: false),
-      WeekProtocol(week: 3, sets: 5, reps: 3, isDeload: false),
+      WeekProtocol(week: 1, sets: 5, reps: 1),
+      WeekProtocol(week: 2, sets: 5, reps: 2),
+      WeekProtocol(week: 3, sets: 5, reps: 3),
       WeekProtocol(week: 4, sets: 5, reps: 2, isDeload: true),
     ],
   );
 
-  testWidgets('ExerciseFormScreen enables Save after name + template', (tester) async {
+  testWidgets('ExerciseFormScreen enables Save after name + template',
+      (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -77,13 +79,14 @@ void main() {
     final containerFinder = find.byType(ProviderScope);
     final element = tester.element(containerFinder);
     final container = ProviderScope.containerOf(element);
-    final spy = container.read(exercisesProvider.notifier) as _SpyExercisesNotifierWithRef;
+    final spy = container.read(exercisesProvider.notifier)
+        as _SpyExercisesNotifierWithRef;
     expect(spy.upsertCalled, isTrue);
   });
 }
 
 class _SpyExercisesNotifierWithRef extends ExercisesNotifier {
-  _SpyExercisesNotifierWithRef(Ref ref) : super(ref);
+  _SpyExercisesNotifierWithRef(super.ref);
   bool upsertCalled = false;
 
   @override
@@ -94,18 +97,22 @@ class _SpyExercisesNotifierWithRef extends ExercisesNotifier {
 
 class _FakeExerciseRepo implements ExerciseRepository {
   @override
-  Future<Either<Failure, List<Exercise>>> getExercises() async => Right(const []);
+  Future<Either<Failure, List<Exercise>>> getExercises() async =>
+      const Right([]);
 
   @override
-  Future<Either<Failure, Exercise>> upsertExercise(Exercise exercise) async => Right(exercise);
+  Future<Either<Failure, Exercise>> upsertExercise(Exercise exercise) async =>
+      Right(exercise);
 
   @override
-  Future<Either<Failure, Unit>> setCurrentLevel(String id, int index) async => Right(unit);
+  Future<Either<Failure, Unit>> setCurrentLevel(String id, int index) async =>
+      const Right(unit);
 
   @override
   Future<Either<Failure, Exercise>> getExercise(String id) async =>
-      Right(const Exercise(id: '', name: ''));
+      const Right(Exercise(id: '', name: ''));
 
   @override
-  Future<Either<Failure, Unit>> deleteExercise(String id) async => Right(unit);
+  Future<Either<Failure, Unit>> deleteExercise(String id) async =>
+      const Right(unit);
 }

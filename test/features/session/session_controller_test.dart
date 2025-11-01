@@ -72,7 +72,8 @@ void main() {
               DateTime endsAt,
               int remaining,
             )?>(
-          resting: (session, next, endsAt, remaining) => (session, next, endsAt, remaining),
+          resting: (session, next, endsAt, remaining) =>
+              (session, next, endsAt, remaining),
           orElse: () => null,
         );
         expect(restState, isNotNull);
@@ -120,7 +121,8 @@ class _FakePrefsRepository implements PrefsRepository {
   TimerSettings _settings() => TimerSettings(defaultRestSeconds: restSeconds);
 
   @override
-  Future<Either<Failure, TimerSettings>> loadTimerSettings() async => right(_settings());
+  Future<Either<Failure, TimerSettings>> loadTimerSettings() async =>
+      right(_settings());
 
   @override
   Future<Either<Failure, Unit>> saveTimerSettings(

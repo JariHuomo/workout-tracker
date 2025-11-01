@@ -4,8 +4,8 @@ import 'package:workouttracker/src/theme/app_theme.dart';
 /// Gradient Container with smooth animations
 class GradientCard extends StatelessWidget {
   const GradientCard({
-    super.key,
     required this.child,
+    super.key,
     this.gradient,
     this.padding,
     this.margin,
@@ -29,7 +29,8 @@ class GradientCard extends StatelessWidget {
         borderRadius: borderRadius ?? BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: (gradient?.colors.first ?? AppColors.deepElectricBlue).withOpacity(0.3),
+            color: (gradient?.colors.first ?? AppColors.deepElectricBlue)
+                .withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -62,8 +63,8 @@ class GradientCard extends StatelessWidget {
 /// Elevated Card with subtle border and shadow
 class ElevatedInfoCard extends StatelessWidget {
   const ElevatedInfoCard({
-    super.key,
     required this.child,
+    super.key,
     this.padding,
     this.margin,
     this.color,
@@ -89,9 +90,10 @@ class ElevatedInfoCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color:
-              borderColor ?? (isDark ? AppColors.smokeGray.withOpacity(0.3) : AppColors.lightGray),
-          width: 1,
+          color: borderColor ??
+              (isDark
+                  ? AppColors.smokeGray.withValues(alpha: 0.3)
+                  : AppColors.lightGray),
         ),
       ),
       child: InkWell(
@@ -109,8 +111,8 @@ class ElevatedInfoCard extends StatelessWidget {
 /// Icon Badge with gradient background
 class IconBadge extends StatelessWidget {
   const IconBadge({
-    super.key,
     required this.icon,
+    super.key,
     this.gradient,
     this.size = 48,
     this.iconSize = 24,
@@ -131,7 +133,8 @@ class IconBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(size / 3),
         boxShadow: [
           BoxShadow(
-            color: (gradient?.colors.first ?? AppColors.neonCyan).withOpacity(0.3),
+            color: (gradient?.colors.first ?? AppColors.neonCyan)
+                .withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -149,9 +152,9 @@ class IconBadge extends StatelessWidget {
 /// Stat Display Widget
 class StatDisplay extends StatelessWidget {
   const StatDisplay({
-    super.key,
     required this.label,
     required this.value,
+    super.key,
     this.icon,
     this.color,
   });
@@ -189,7 +192,7 @@ class StatDisplay extends StatelessWidget {
         Text(
           label,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.6),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -201,8 +204,8 @@ class StatDisplay extends StatelessWidget {
 /// Progress Ring Indicator
 class ProgressRing extends StatelessWidget {
   const ProgressRing({
-    super.key,
     required this.progress,
+    super.key,
     this.size = 120,
     this.strokeWidth = 12,
     this.gradient,
@@ -228,11 +231,11 @@ class ProgressRing extends StatelessWidget {
             width: size,
             height: size,
             child: CircularProgressIndicator(
-              value: 1.0,
+              value: 1,
               strokeWidth: strokeWidth,
-              backgroundColor: AppColors.smokeGray.withOpacity(0.2),
+              backgroundColor: AppColors.smokeGray.withValues(alpha: 0.2),
               valueColor: AlwaysStoppedAnimation<Color>(
-                AppColors.smokeGray.withOpacity(0.1),
+                AppColors.smokeGray.withValues(alpha: 0.1),
               ),
             ),
           ),
@@ -261,8 +264,8 @@ class ProgressRing extends StatelessWidget {
 /// Level Badge - Displays level number with style
 class LevelBadge extends StatelessWidget {
   const LevelBadge({
-    super.key,
     required this.levelIndex,
+    super.key,
     this.isDeload = false,
     this.isActive = false,
     this.size = 48,
@@ -289,10 +292,11 @@ class LevelBadge extends StatelessWidget {
       textColor = Colors.white;
     } else {
       backgroundColor = isDark ? AppColors.carbonGray : AppColors.softGray;
-      textColor = theme.colorScheme.onSurface.withOpacity(0.6);
+      textColor = theme.colorScheme.onSurface.withValues(alpha: 0.6);
     }
 
-    final semanticLabel = StringBuffer('Level ${levelIndex.toString().padLeft(2, '0')}');
+    final semanticLabel =
+        StringBuffer('Level ${levelIndex.toString().padLeft(2, '0')}');
     if (isDeload) {
       semanticLabel.write(', deload');
     }
@@ -313,7 +317,7 @@ class LevelBadge extends StatelessWidget {
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: backgroundColor.withOpacity(0.4),
+                    color: backgroundColor.withValues(alpha: 0.4),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -338,8 +342,8 @@ class LevelBadge extends StatelessWidget {
 /// Section Header with optional action
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
-    super.key,
     required this.title,
+    super.key,
     this.subtitle,
     this.trailing,
     this.padding,
@@ -355,7 +359,8 @@ class SectionHeader extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
           Expanded(
@@ -373,7 +378,7 @@ class SectionHeader extends StatelessWidget {
                   Text(
                     subtitle!,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -390,10 +395,10 @@ class SectionHeader extends StatelessWidget {
 /// Empty State Widget
 class EmptyStateWidget extends StatelessWidget {
   const EmptyStateWidget({
-    super.key,
     required this.icon,
     required this.title,
     required this.message,
+    super.key,
     this.actionLabel,
     this.onAction,
   });
@@ -422,8 +427,8 @@ class EmptyStateWidget extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  theme.colorScheme.primary.withOpacity(0.5),
-                  theme.colorScheme.secondary.withOpacity(0.5),
+                  theme.colorScheme.primary.withValues(alpha: 0.5),
+                  theme.colorScheme.secondary.withValues(alpha: 0.5),
                 ],
               ),
             ),
@@ -439,7 +444,7 @@ class EmptyStateWidget extends StatelessWidget {
             Text(
               message,
               style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               textAlign: TextAlign.center,
             ),
@@ -461,9 +466,9 @@ class EmptyStateWidget extends StatelessWidget {
 /// Animated Scale Button
 class AnimatedButton extends StatefulWidget {
   const AnimatedButton({
-    super.key,
     required this.child,
     required this.onPressed,
+    super.key,
     this.scaleDown = 0.95,
   });
 
@@ -475,7 +480,8 @@ class AnimatedButton extends StatefulWidget {
   State<AnimatedButton> createState() => _AnimatedButtonState();
 }
 
-class _AnimatedButtonState extends State<AnimatedButton> with SingleTickerProviderStateMixin {
+class _AnimatedButtonState extends State<AnimatedButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -487,7 +493,7 @@ class _AnimatedButtonState extends State<AnimatedButton> with SingleTickerProvid
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
-      begin: 1.0,
+      begin: 1,
       end: widget.scaleDown,
     ).animate(
       CurvedAnimation(
@@ -513,7 +519,8 @@ class _AnimatedButtonState extends State<AnimatedButton> with SingleTickerProvid
               widget.onPressed?.call();
             }
           : null,
-      onTapCancel: widget.onPressed != null ? () => _controller.reverse() : null,
+      onTapCancel:
+          widget.onPressed != null ? () => _controller.reverse() : null,
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: widget.child,

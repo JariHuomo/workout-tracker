@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
+import 'package:workouttracker/src/features/exercises/application/exercises_notifier.dart';
 import 'package:workouttracker/src/features/exercises/presentation/exercises_screen.dart';
 
 void main() {
-  testWidgets('ExercisesScreen shows empty state when no items', (tester) async {
+  testWidgets('ExercisesScreen shows empty state when no items',
+      (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -29,7 +30,7 @@ void main() {
       id: 'ex1',
       name: 'Pull-ups',
       levels: [
-        Level(index: 1, repsPerSet: [5, 5, 5, 5, 5], restSeconds: 90),
+        Level(index: 1, repsPerSet: [5, 5, 5, 5, 5]),
       ],
     );
 
@@ -53,7 +54,7 @@ void main() {
 }
 
 class _FakeExercisesNotifier extends ExercisesNotifier {
-  _FakeExercisesNotifier(Ref ref, List<Exercise> exercises) : super(ref) {
+  _FakeExercisesNotifier(super.ref, List<Exercise> exercises) {
     state = AsyncValue.data(exercises);
   }
   @override

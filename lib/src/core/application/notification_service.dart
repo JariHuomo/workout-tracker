@@ -41,7 +41,8 @@ class NotificationService {
         importance: Importance.high,
       );
       await _plugin
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(channel);
     }
     _initialized = true;
@@ -51,10 +52,12 @@ class NotificationService {
     await init();
     if (!_isSupportedPlatform) return;
     await _plugin
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(alert: true, badge: true, sound: true);
     await _plugin
-        .resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            MacOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
@@ -82,7 +85,8 @@ class NotificationService {
         iOS: DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
       payload: sessionId,
     );
   }

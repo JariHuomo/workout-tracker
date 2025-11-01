@@ -4,14 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/session.dart';
+import 'package:workouttracker/src/features/exercises/application/exercises_notifier.dart';
 import 'package:workouttracker/src/features/session/application/session_controller.dart';
 import 'package:workouttracker/src/features/session/presentation/session_screen.dart';
 
 void main() {
   testWidgets('SessionScreen renders in-progress view', (tester) async {
     final fake = _FakeSessionController.withState(
-      SessionState.inProgress(
-        session: const WorkoutSession(
+      const SessionState.inProgress(
+        session: WorkoutSession(
           id: 's1',
           exerciseId: 'ex1',
           levelIndex: 0,
@@ -87,7 +88,6 @@ void main() {
     const exercise = Exercise(
       id: 'exX',
       name: 'Dips',
-      currentLevelIndex: 0,
       levels: [
         Level(index: 1, repsPerSet: [5, 5], restSeconds: 60),
         Level(index: 2, repsPerSet: [6, 6], restSeconds: 60),
@@ -97,7 +97,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          exercisesProvider.overrideWith((ref) => _FakeExercisesNotifier(ref, const [exercise])),
+          exercisesProvider.overrideWith(
+            (ref) => _FakeExercisesNotifier(ref, const [exercise]),
+          ),
           sessionControllerProvider.overrideWith((ref) => fake..attach(ref)),
         ],
         child: const MaterialApp(home: SessionScreen(sessionId: 's3')),
@@ -114,16 +116,17 @@ void main() {
 
 class _FakeSessionController extends SessionController {
   _FakeSessionController(this._initial) : super(_PendingRef());
+
+  _FakeSessionController.withState(SessionState state) : this(state);
   final SessionState _initial;
   void attach(Ref ref) {
     // Swap to real ref and set initial state
     // ignore: invalid_use_of_visible_for_testing_member
-    (state as dynamic); // ensure state is initialized
-    // Replace the private field via super constructor already done; just set state.
+    final _ = state; // ensure state is initialized
+    // Replace the private field via super constructor already done;
+    // just set state.
     state = _initial;
   }
-
-  _FakeSessionController.withState(SessionState state) : this(state);
 }
 
 class _PendingRef implements Ref {
@@ -132,7 +135,7 @@ class _PendingRef implements Ref {
 }
 
 class _FakeExercisesNotifier extends ExercisesNotifier {
-  _FakeExercisesNotifier(Ref ref, List<Exercise> exercises) : super(ref) {
+  _FakeExercisesNotifier(super.ref, List<Exercise> exercises) {
     state = AsyncValue.data(exercises);
   }
   @override

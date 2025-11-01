@@ -15,5 +15,6 @@ class TimerSettings with _$TimerSettings {
     @Default(CountdownBeeps.last3) CountdownBeeps beeps,
   }) = _TimerSettings;
 
-  factory TimerSettings.fromJson(Map<String, dynamic> json) => _$TimerSettingsFromJson(json);
+  factory TimerSettings.fromJson(Map<String, dynamic> json) =>
+      _$TimerSettingsFromJson(json);
 }

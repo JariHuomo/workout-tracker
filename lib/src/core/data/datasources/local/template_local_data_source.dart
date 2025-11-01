@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 class TemplateLocalDataSource {
-  TemplateLocalDataSource({AssetBundle? bundle}) : _bundle = bundle ?? rootBundle;
+  TemplateLocalDataSource({AssetBundle? bundle})
+      : _bundle = bundle ?? rootBundle;
 
   final AssetBundle _bundle;
 

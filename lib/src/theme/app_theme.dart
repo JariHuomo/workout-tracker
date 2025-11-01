@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:workouttracker/src/theme/theme_extensions.dart';
 
 class AppThemeData {
   const AppThemeData({
@@ -59,12 +60,16 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
   // Light Theme
   final lightColorScheme = ColorScheme.fromSeed(
     seedColor: AppColors.deepElectricBlue,
-    brightness: Brightness.light,
     primary: AppColors.deepElectricBlue,
+    onPrimary: Colors.white, // CRITICAL: White text on blue background
     secondary: AppColors.vibrantPurple,
+    onSecondary: Colors.white, // White text on purple background
     tertiary: AppColors.neonCyan,
+    onTertiary: AppColors.richBlack, // Dark text on cyan background
     error: AppColors.energeticOrange,
+    onError: Colors.white,
     surface: AppColors.cloudWhite,
+    onSurface: AppColors.richBlack,
     surfaceContainerHighest: AppColors.softGray,
   );
 
@@ -72,6 +77,24 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
     useMaterial3: true,
     colorScheme: lightColorScheme,
     scaffoldBackgroundColor: AppColors.cloudWhite,
+    extensions: [
+      AppSemanticColors(
+        success: AppColors.successGreen,
+        onSuccess: Colors.white,
+        successContainer: AppColors.successGreen.withValues(alpha: 0.15),
+        onSuccessContainer: AppColors.successGreen,
+        warning: AppColors.warningAmber,
+        onWarning: AppColors.richBlack,
+        warningContainer: AppColors.warningAmber.withValues(alpha: 0.15),
+        onWarningContainer: AppColors.warningAmber,
+        info: AppColors.neonCyan,
+        onInfo: AppColors.richBlack,
+        infoContainer: AppColors.neonCyan.withValues(alpha: 0.15),
+        onInfoContainer: AppColors.neonCyan,
+        surfaceTint: AppColors.deepElectricBlue.withValues(alpha: 0.05),
+        cardBorder: Colors.transparent,
+      ),
+    ],
 
     // Typography - Athletic and Bold
     textTheme: const TextTheme(
@@ -148,12 +171,12 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
     ),
 
     // AppBar Theme
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       centerTitle: false,
       elevation: 0,
       backgroundColor: AppColors.cloudWhite,
       foregroundColor: AppColors.richBlack,
-      titleTextStyle: const TextStyle(
+      titleTextStyle: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w700,
         color: AppColors.richBlack,
@@ -281,18 +304,41 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
     seedColor: AppColors.deepElectricBlue,
     brightness: Brightness.dark,
     primary: AppColors.deepElectricBlue,
+    onPrimary: Colors.white, // CRITICAL FIX: White text on blue background
     secondary: AppColors.vibrantPurple,
+    onSecondary: Colors.white, // White text on purple background
     tertiary: AppColors.neonCyan,
+    onTertiary: AppColors.richBlack, // Dark text on cyan background
     error: AppColors.energeticOrange,
+    onError: Colors.white,
     surface: AppColors.deepCharcoal,
-    surfaceContainerHighest: AppColors.carbonGray,
     onSurface: AppColors.cloudWhite,
+    surfaceContainerHighest: AppColors.carbonGray,
+    onSurfaceVariant: AppColors.cloudWhite.withValues(alpha: 0.7),
   );
 
   final dark = ThemeData(
     useMaterial3: true,
     colorScheme: darkColorScheme,
     scaffoldBackgroundColor: AppColors.richBlack,
+    extensions: [
+      AppSemanticColors(
+        success: AppColors.successGreen,
+        onSuccess: Colors.white,
+        successContainer: AppColors.successGreen.withValues(alpha: 0.2),
+        onSuccessContainer: AppColors.successGreen,
+        warning: AppColors.warningAmber,
+        onWarning: AppColors.richBlack,
+        warningContainer: AppColors.warningAmber.withValues(alpha: 0.2),
+        onWarningContainer: AppColors.warningAmber,
+        info: AppColors.neonCyan,
+        onInfo: AppColors.richBlack,
+        infoContainer: AppColors.neonCyan.withValues(alpha: 0.2),
+        onInfoContainer: AppColors.neonCyan,
+        surfaceTint: AppColors.deepElectricBlue.withValues(alpha: 0.1),
+        cardBorder: AppColors.smokeGray.withValues(alpha: 0.3),
+      ),
+    ],
 
     // Typography - Same as light but optimized for dark
     textTheme: light.textTheme.apply(
@@ -304,12 +350,11 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
     cardTheme: CardThemeData(
       elevation: 0,
       color: AppColors.deepCharcoal,
-      shadowColor: AppColors.deepElectricBlue.withOpacity(0.2),
+      shadowColor: AppColors.deepElectricBlue.withValues(alpha: 0.2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: AppColors.smokeGray.withOpacity(0.3),
-          width: 1,
+          color: AppColors.smokeGray.withValues(alpha: 0.3),
         ),
       ),
       clipBehavior: Clip.antiAlias,
@@ -317,12 +362,12 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
     ),
 
     // AppBar Theme
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       centerTitle: false,
       elevation: 0,
       backgroundColor: AppColors.richBlack,
       foregroundColor: AppColors.cloudWhite,
-      titleTextStyle: const TextStyle(
+      titleTextStyle: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w700,
         color: AppColors.cloudWhite,
@@ -339,7 +384,7 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        side: BorderSide(
+        side: const BorderSide(
           color: AppColors.smokeGray,
           width: 2,
         ),
@@ -384,7 +429,7 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
       labelStyle: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w500,
-        color: AppColors.cloudWhite.withOpacity(0.7),
+        color: AppColors.cloudWhite.withValues(alpha: 0.7),
       ),
     ),
 
@@ -400,8 +445,7 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: AppColors.smokeGray.withOpacity(0.3),
-          width: 1,
+          color: AppColors.smokeGray.withValues(alpha: 0.3),
         ),
       ),
     ),
@@ -418,7 +462,7 @@ final appThemeProvider = Provider<AppThemeData>((ref) {
 
     // Divider Theme
     dividerTheme: DividerThemeData(
-      color: AppColors.smokeGray.withOpacity(0.3),
+      color: AppColors.smokeGray.withValues(alpha: 0.3),
       thickness: 1,
       space: 1,
     ),

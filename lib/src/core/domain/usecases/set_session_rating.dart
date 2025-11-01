@@ -13,4 +13,3 @@ class SetSessionRating {
     return repo.setRating(sessionId: sessionId, rating: rating);
   }
 }
-

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:go_router/go_router.dart';
 import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/session.dart';
 import 'package:workouttracker/src/core/domain/failures.dart';
+import 'package:workouttracker/src/features/exercises/application/exercises_notifier.dart';
 import 'package:workouttracker/src/features/session/application/session_controller.dart';
 import 'package:workouttracker/src/theme/app_theme.dart';
 
@@ -16,7 +17,8 @@ class SessionScreen extends ConsumerStatefulWidget {
   ConsumerState<SessionScreen> createState() => _SessionScreenState();
 }
 
-class _SessionScreenState extends ConsumerState<SessionScreen> with WidgetsBindingObserver {
+class _SessionScreenState extends ConsumerState<SessionScreen>
+    with WidgetsBindingObserver {
   late final TextEditingController _customRepsController;
 
   @override
@@ -58,22 +60,28 @@ class _SessionScreenState extends ConsumerState<SessionScreen> with WidgetsBindi
           onLogExact: () => ref
               .read(sessionControllerProvider.notifier)
               .logSet(reps: session.targetRepsPerSet[currentSetIndex]),
-          onLogDelta: (delta) => ref.read(sessionControllerProvider.notifier).logSet(
-                reps: (session.targetRepsPerSet[currentSetIndex] + delta).clamp(0, 999),
-              ),
+          onLogDelta: (delta) =>
+              ref.read(sessionControllerProvider.notifier).logSet(
+                    reps: (session.targetRepsPerSet[currentSetIndex] + delta)
+                        .clamp(0, 999),
+                  ),
           onLogCustom: () {
             final value = int.tryParse(_customRepsController.text) ?? 0;
-            ref.read(sessionControllerProvider.notifier).logSet(reps: value.clamp(0, 999));
+            ref
+                .read(sessionControllerProvider.notifier)
+                .logSet(reps: value.clamp(0, 999));
             _customRepsController.clear();
           },
           customRepsController: _customRepsController,
         ),
-        resting: (session, nextSetIndex, restEndsAt, remainingSeconds) => _RestingView(
+        resting: (session, nextSetIndex, restEndsAt, remainingSeconds) =>
+            _RestingView(
           session: session,
           nextSetIndex: nextSetIndex,
           remainingSeconds: remainingSeconds,
           restEndsAt: restEndsAt,
-          onAdjust: (delta) => ref.read(sessionControllerProvider.notifier).adjustRest(delta),
+          onAdjust: (delta) =>
+              ref.read(sessionControllerProvider.notifier).adjustRest(delta),
           onSkip: () => ref.read(sessionControllerProvider.notifier).skipRest(),
         ),
         completed: (session) {
@@ -87,13 +95,14 @@ class _SessionScreenState extends ConsumerState<SessionScreen> with WidgetsBindi
             onAdvance: exercise.id.isEmpty
                 ? null
                 : () async {
-                    final result =
-                        await ref.read(exercisesProvider.notifier).advanceLevel(exercise);
+                    final result = await ref
+                        .read(exercisesProvider.notifier)
+                        .advanceLevel(exercise);
                     result.match(
                       (failure) => _showSnackBar(context, failure.message),
                       (_) {
                         _showSnackBar(context, 'Advanced to next level');
-                        Navigator.of(context).maybePop();
+                        context.pop();
                       },
                     );
                   },
@@ -101,7 +110,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> with WidgetsBindi
         },
         failure: (failure) => _FailureView(
           failure: failure,
-          onDismiss: () => Navigator.of(context).maybePop(),
+          onDismiss: () => context.pop(),
         ),
       ),
     );
@@ -145,7 +154,7 @@ class _InProgressView extends StatelessWidget {
           Text(
             'Set ${currentSetIndex + 1} of ${session.targetRepsPerSet.length}',
             style: theme.textTheme.titleSmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
             ),
@@ -161,18 +170,18 @@ class _InProgressView extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  theme.colorScheme.primary.withOpacity(0.12),
-                  theme.colorScheme.primary.withOpacity(0.06),
+                  theme.colorScheme.primary.withValues(alpha: 0.12),
+                  theme.colorScheme.primary.withValues(alpha: 0.06),
                 ],
               ),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: theme.colorScheme.primary.withOpacity(0.4),
+                color: theme.colorScheme.primary.withValues(alpha: 0.4),
                 width: 2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: theme.colorScheme.primary.withOpacity(0.15),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.15),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -183,7 +192,7 @@ class _InProgressView extends StatelessWidget {
                 Text(
                   'TARGET REPS',
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.5,
                   ),
@@ -195,10 +204,10 @@ class _InProgressView extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                     fontSize: 80,
                     color: theme.colorScheme.primary,
-                    height: 1.0,
+                    height: 1,
                     shadows: [
                       Shadow(
-                        color: theme.colorScheme.primary.withOpacity(0.3),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
                         blurRadius: 12,
                       ),
                     ],
@@ -214,8 +223,6 @@ class _InProgressView extends StatelessWidget {
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
                 colors: [
                   AppColors.deepElectricBlue,
                   AppColors.vibrantPurple,
@@ -224,7 +231,7 @@ class _InProgressView extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.deepElectricBlue.withOpacity(0.4),
+                  color: AppColors.deepElectricBlue.withValues(alpha: 0.4),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -254,7 +261,7 @@ class _InProgressView extends StatelessWidget {
           Text(
             'QUICK ADJUST',
             style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
             ),
@@ -301,7 +308,7 @@ class _InProgressView extends StatelessWidget {
           Text(
             'CUSTOM REPS',
             style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
             ),
@@ -356,7 +363,7 @@ class _InProgressView extends StatelessWidget {
           Text(
             'SET PROGRESS',
             style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
             ),
@@ -397,13 +404,12 @@ class _RestingView extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Rest label
           Text(
             'REST PERIOD',
             style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
             ),
@@ -418,23 +424,23 @@ class _RestingView extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  theme.colorScheme.tertiary.withOpacity(0.15),
-                  theme.colorScheme.tertiary.withOpacity(0.08),
+                  theme.colorScheme.tertiary.withValues(alpha: 0.15),
+                  theme.colorScheme.tertiary.withValues(alpha: 0.08),
                 ],
               ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: theme.colorScheme.tertiary.withOpacity(0.4),
+                color: theme.colorScheme.tertiary.withValues(alpha: 0.4),
                 width: 2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: theme.colorScheme.tertiary.withOpacity(0.2),
+                  color: theme.colorScheme.tertiary.withValues(alpha: 0.2),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: theme.colorScheme.tertiary.withOpacity(0.1),
+                  color: theme.colorScheme.tertiary.withValues(alpha: 0.1),
                   blurRadius: 48,
                   offset: const Offset(0, 16),
                 ),
@@ -448,13 +454,14 @@ class _RestingView extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                     fontSize: 80,
                     color: theme.colorScheme.tertiary,
-                    height: 1.0,
+                    height: 1,
                     fontFeatures: const [
                       FontFeature.tabularFigures(),
                     ],
                     shadows: [
                       Shadow(
-                        color: theme.colorScheme.tertiary.withOpacity(0.4),
+                        color:
+                            theme.colorScheme.tertiary.withValues(alpha: 0.4),
                         blurRadius: 16,
                       ),
                     ],
@@ -462,9 +469,10 @@ class _RestingView extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Ends at ${TimeOfDay.fromDateTime(restEndsAt).format(context)}',
+                  'Ends at '
+                  '${TimeOfDay.fromDateTime(restEndsAt).format(context)}',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
                   ),
@@ -541,18 +549,18 @@ class _RestingView extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  theme.colorScheme.primary.withOpacity(0.12),
-                  theme.colorScheme.primary.withOpacity(0.06),
+                  theme.colorScheme.primary.withValues(alpha: 0.12),
+                  theme.colorScheme.primary.withValues(alpha: 0.06),
                 ],
               ),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: theme.colorScheme.primary.withOpacity(0.3),
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
                 width: 2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   blurRadius: 16,
                   offset: const Offset(0, 4),
                 ),
@@ -592,9 +600,13 @@ class _RestingView extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.15),
+                        color:
+                            theme.colorScheme.primary.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -618,7 +630,7 @@ class _RestingView extends StatelessWidget {
             child: Text(
               'SET PROGRESS',
               style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1.2,
               ),
@@ -710,7 +722,7 @@ class _CompletedView extends ConsumerWidget {
 }
 
 class _DifficultyRating extends StatelessWidget {
-  const _DifficultyRating({this.rating, required this.onRate});
+  const _DifficultyRating({required this.onRate, this.rating});
 
   final int? rating;
   final ValueChanged<int> onRate;
@@ -759,7 +771,7 @@ class _MasteryView extends ConsumerWidget {
     final rating = ratingAsync.maybeWhen(data: (r) => r, orElse: () => null);
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -903,8 +915,8 @@ class _SetChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isCompleted = attempt != null;
-    final bool isPassed = isCompleted && (attempt!.reps >= target);
-    final bool isFailed = isCompleted && (attempt!.reps < target);
+    final isPassed = isCompleted && (attempt!.reps >= target);
+    final isFailed = isCompleted && (attempt!.reps < target);
 
     Color backgroundColor;
     Color textColor;
@@ -912,24 +924,25 @@ class _SetChip extends StatelessWidget {
     IconData? icon;
 
     if (isPassed) {
-      backgroundColor = Colors.green.withOpacity(0.15);
+      backgroundColor = Colors.green.withValues(alpha: 0.15);
       textColor = Colors.green.shade700;
-      borderColor = Colors.green.withOpacity(0.3);
+      borderColor = Colors.green.withValues(alpha: 0.3);
       icon = Icons.check_circle;
     } else if (isFailed) {
-      backgroundColor = Colors.red.withOpacity(0.12);
+      backgroundColor = Colors.red.withValues(alpha: 0.12);
       textColor = Colors.red.shade700;
-      borderColor = Colors.red.withOpacity(0.3);
+      borderColor = Colors.red.withValues(alpha: 0.3);
       icon = Icons.warning_rounded;
     } else if (isActive) {
       backgroundColor = theme.colorScheme.primaryContainer;
       textColor = theme.colorScheme.onPrimaryContainer;
-      borderColor = theme.colorScheme.primary.withOpacity(0.5);
+      borderColor = theme.colorScheme.primary.withValues(alpha: 0.5);
       icon = Icons.play_arrow;
     } else {
-      backgroundColor =
-          theme.brightness == Brightness.dark ? const Color(0xFF2A2A2A) : const Color(0xFFF5F5F5);
-      textColor = theme.colorScheme.onSurface.withOpacity(0.6);
+      backgroundColor = theme.brightness == Brightness.dark
+          ? const Color(0xFF2A2A2A)
+          : const Color(0xFFF5F5F5);
+      textColor = theme.colorScheme.onSurface.withValues(alpha: 0.6);
       borderColor = null;
     }
 
@@ -951,7 +964,9 @@ class _SetChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(12),
-          border: borderColor != null ? Border.all(color: borderColor, width: 2) : null,
+          border: borderColor != null
+              ? Border.all(color: borderColor, width: 2)
+              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/session.dart';
+import 'package:workouttracker/src/features/exercises/application/exercises_notifier.dart';
 import 'package:workouttracker/src/features/session/application/session_controller.dart';
 
 class ExerciseDetailsScreen extends ConsumerWidget {
@@ -123,7 +123,9 @@ class _ExerciseDetails extends ConsumerWidget {
                 children: [
                   TextButton(
                     onPressed: () async {
-                      await ref.read(exercisesProvider.notifier).setCurrentLevel(ex.id, i);
+                      await ref
+                          .read(exercisesProvider.notifier)
+                          .setCurrentLevel(ex.id, i);
                     },
                     child: const Text('Set start'),
                   ),
@@ -133,7 +135,9 @@ class _ExerciseDetails extends ConsumerWidget {
             }
             return ListTile(
               leading: Icon(
-                i == currentIdx ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                i == currentIdx
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
               ),
               title: Text(
                 [
@@ -146,7 +150,7 @@ class _ExerciseDetails extends ConsumerWidget {
               ),
               trailing: trailing,
             );
-          }),
+          },),
       ],
     );
   }

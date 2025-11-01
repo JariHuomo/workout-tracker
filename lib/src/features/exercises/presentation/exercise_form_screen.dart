@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:workouttracker/src/core/application/providers.dart';
 import 'package:workouttracker/src/core/domain/entities/exercise.dart';
 import 'package:workouttracker/src/core/domain/entities/template.dart';
 import 'package:workouttracker/src/core/domain/usecases/generate_levels_manual.dart';
+import 'package:workouttracker/src/features/exercises/application/exercises_notifier.dart';
 import 'package:workouttracker/src/theme/app_theme.dart';
 import 'package:workouttracker/src/theme/custom_widgets.dart';
 
@@ -144,7 +144,7 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
         if (parsed == null) {
           return;
         }
-        final sanitized = parsed.clamp(min, max).toInt();
+        final sanitized = parsed.clamp(min, max);
         if (sanitized != parsed) {
           controller
             ..text = sanitized.toString()
@@ -184,7 +184,7 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                 disabledBackgroundColor:
                     theme.colorScheme.surfaceContainerHighest,
                 disabledForegroundColor:
-                    theme.colorScheme.onSurface.withOpacity(0.38),
+                    theme.colorScheme.onSurface.withValues(alpha: 0.38),
                 textStyle: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -202,7 +202,7 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
           const SectionHeader(
             title: 'Exercise Details',
             subtitle: 'Name your exercise and configure the progression',
-            padding: EdgeInsets.only(left: 0, right: 0, top: 8, bottom: 16),
+            padding: EdgeInsets.only(top: 8, bottom: 16),
           ),
           TextField(
             controller: _name,
@@ -240,8 +240,8 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                           Text(
                             'Use a pre-built progression plan',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  theme.colorScheme.onSurface.withOpacity(0.6),
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -252,14 +252,14 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                 const SizedBox(height: 16),
                 templatesAsync.when(
                   data: (templates) => DropdownButtonFormField<String?>(
-                    value: _selectedTemplate?.id,
+                    isExpanded: true,
+                    initialValue: _selectedTemplate?.id,
                     decoration: const InputDecoration(
                       labelText: 'Select Template',
                       prefixIcon: Icon(Icons.architecture),
                     ),
                     items: [
                       const DropdownMenuItem<String?>(
-                        value: null,
                         child: Text('No template (manual)'),
                       ),
                       ...templates.map(
@@ -287,7 +287,7 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                   error: (error, _) => Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.error.withOpacity(0.1),
+                      color: theme.colorScheme.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -323,7 +323,7 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
           const SectionHeader(
             title: 'Level Configuration',
             subtitle: 'Define sets, reps, and rest periods',
-            padding: EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 16),
+            padding: EdgeInsets.only(bottom: 16),
           ),
           Row(
             children: [
@@ -392,7 +392,6 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                           min: 1,
                           max: 999,
                           setter: (value) => _startReps = value,
-                          enabled: true,
                           icon: Icons.play_arrow,
                         ),
                       ),
@@ -404,7 +403,6 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                           min: 1,
                           max: 999,
                           setter: (value) => _endReps = value,
-                          enabled: true,
                           icon: Icons.flag_outlined,
                         ),
                       ),
@@ -417,12 +415,12 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                     min: 1,
                     max: 999,
                     setter: (value) => _step = value,
-                    enabled: true,
                     icon: Icons.stairs,
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<ManualGenerationMode>(
-                    value: _mode,
+                    isExpanded: true,
+                    initialValue: _mode,
                     decoration: const InputDecoration(
                       labelText: 'Progression Mode',
                       prefixIcon: Icon(Icons.tune),
@@ -439,17 +437,20 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                       ),
                     ],
                     onChanged: (mode) => setState(
-                        () => _mode = mode ?? ManualGenerationMode.uniform),
+                      () => _mode = mode ?? ManualGenerationMode.uniform,
+                    ),
                   ),
                   if (_endReps > 15) ...[
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                        color: theme.colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: theme.colorScheme.outline.withOpacity(0.2),
+                          color:
+                              theme.colorScheme.outline.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Row(
@@ -457,14 +458,17 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                           Icon(
                             Icons.lightbulb_outline,
                             size: 18,
-                            color: theme.colorScheme.primary.withOpacity(0.8),
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.8),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              '15 reps per set is a common mastery target. You set $_endReps.',
+                              '15 reps per set is a common mastery target. '
+                              'You set $_endReps.',
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                                color: theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.7),
                               ),
                             ),
                           ),
@@ -513,7 +517,8 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                     Text(
                       'Insert easier levels periodically for recovery',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -526,7 +531,6 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                             min: 2,
                             max: 99,
                             setter: (value) => _deloadEvery = value,
-                            enabled: true,
                             icon: Icons.repeat,
                           ),
                         ),
@@ -536,7 +540,7 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                             controller: _deloadPctController,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.digitsOnly,
                             ],
                             decoration: const InputDecoration(
                               labelText: 'Reduction',
@@ -547,7 +551,7 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                               final parsed =
                                   int.tryParse(_deloadPctController.text);
                               if (parsed == null) return;
-                              final clamped = parsed.clamp(1, 90).toInt();
+                              final clamped = parsed.clamp(1, 90);
                               if (clamped != parsed) {
                                 _deloadPctController
                                   ..text = clamped.toString()
@@ -585,8 +589,10 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     backgroundColor: AppColors.deepElectricBlue,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: theme.colorScheme.surfaceContainerHighest,
-                    disabledForegroundColor: theme.colorScheme.onSurface.withOpacity(0.38),
+                    disabledBackgroundColor:
+                        theme.colorScheme.surfaceContainerHighest,
+                    disabledForegroundColor:
+                        theme.colorScheme.onSurface.withValues(alpha: 0.38),
                     textStyle: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -608,7 +614,7 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     foregroundColor: theme.colorScheme.error,
                     side: BorderSide(
-                      color: theme.colorScheme.error.withOpacity(0.5),
+                      color: theme.colorScheme.error.withValues(alpha: 0.5),
                       width: 2,
                     ),
                   ),
@@ -621,14 +627,14 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
             SectionHeader(
               title: 'Level Preview',
               subtitle: '${_levels.length} levels generated',
-              padding: const EdgeInsets.only(left: 0, right: 0, bottom: 12),
+              padding: const EdgeInsets.only(bottom: 12),
             ),
             ..._levels.map((level) => _LevelPreviewCard(level: level)),
           ],
           const SizedBox(height: 24),
           const SectionHeader(
             title: 'Additional Notes',
-            padding: EdgeInsets.only(left: 0, right: 0, bottom: 12),
+            padding: EdgeInsets.only(bottom: 12),
           ),
           TextField(
             controller: _notes,
@@ -671,7 +677,7 @@ class _TemplateSummary extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -686,7 +692,7 @@ class _TemplateSummary extends StatelessWidget {
               const Spacer(),
               Icon(
                 Icons.check_circle,
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 size: 24,
               ),
             ],
@@ -703,7 +709,7 @@ class _TemplateSummary extends StatelessWidget {
           Text(
             template.description,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
             ),
           ),
           const SizedBox(height: 16),
@@ -744,13 +750,13 @@ class _TemplateMetric extends StatelessWidget {
         Icon(
           icon,
           size: 16,
-          color: Colors.white.withOpacity(0.9),
+          color: Colors.white.withValues(alpha: 0.9),
         ),
         const SizedBox(width: 6),
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -767,6 +773,7 @@ class _LevelPreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final totalReps = level.repsPerSet.fold<int>(0, (sum, reps) => sum + reps);
 
     return ElevatedInfoCard(
       padding: const EdgeInsets.all(16),
@@ -798,39 +805,42 @@ class _LevelPreviewCard extends StatelessWidget {
                     Icon(
                       Icons.fitness_center,
                       size: 14,
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '${level.repsPerSet.length} sets',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Icon(
                       Icons.summarize_outlined,
                       size: 14,
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Total ${level.repsPerSet.fold<int>(0, (s, v) => s + v)} reps',
+                      'Total $totalReps reps',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Icon(
                       Icons.timer_outlined,
                       size: 14,
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '${level.restSeconds}s rest',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -842,7 +852,7 @@ class _LevelPreviewCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.warningAmber.withOpacity(0.2),
+                color: AppColors.warningAmber.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: AppColors.warningAmber,

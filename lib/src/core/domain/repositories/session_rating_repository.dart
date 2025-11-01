@@ -9,4 +9,3 @@ abstract class SessionRatingRepository {
 
   Future<Either<Failure, int?>> getRating(String sessionId);
 }
-

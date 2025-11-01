@@ -11,16 +11,6 @@ class ProgressionTemplate {
     List<WeekProtocol> weeks = const <WeekProtocol>[],
   }) : weeks = List<WeekProtocol>.unmodifiable(weeks);
 
-  final String id;
-  final String name;
-  final String description;
-  final String targetAudience;
-  final int estimatedWeeks;
-  final int deloadFrequency;
-  final double deloadPercentage;
-  final String difficulty;
-  final List<WeekProtocol> weeks;
-
   factory ProgressionTemplate.fromJson(Map<String, dynamic> json) {
     return ProgressionTemplate(
       id: json['id'] as String,
@@ -36,6 +26,16 @@ class ProgressionTemplate {
           .toList(),
     );
   }
+
+  final String id;
+  final String name;
+  final String description;
+  final String targetAudience;
+  final int estimatedWeeks;
+  final int deloadFrequency;
+  final double deloadPercentage;
+  final String difficulty;
+  final List<WeekProtocol> weeks;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -58,11 +58,6 @@ class WeekProtocol {
     this.isDeload = false,
   });
 
-  final int week;
-  final int sets;
-  final int reps;
-  final bool isDeload;
-
   factory WeekProtocol.fromJson(Map<String, dynamic> json) {
     return WeekProtocol(
       week: (json['week'] as num).toInt(),
@@ -71,6 +66,11 @@ class WeekProtocol {
       isDeload: json['isDeload'] as bool? ?? false,
     );
   }
+
+  final int week;
+  final int sets;
+  final int reps;
+  final bool isDeload;
 
   Map<String, dynamic> toJson() => {
         'week': week,
